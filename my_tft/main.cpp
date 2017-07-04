@@ -38,6 +38,7 @@ void xianshi()//显示信息
 	POINT_COLOR = RED;	
 	showhanzi(10,0,0);  //晶
 	showhanzi(45,0,1);  //耀
+	LCD_ShowString(80,16,"Magic prince");
     LCD_ShowString(10,35,"2.4 TFT SPI 240*320");
 	LCD_ShowString(10,55,"LCD_W:");	LCD_ShowNum(70,55,LCD_W,3);
 	LCD_ShowString(110,55,"LCD_H:");LCD_ShowNum(160,55,LCD_H,3);	
