@@ -1,5 +1,6 @@
 #ifndef __WINDOW_H
-#define __WINDOW_H 			 
+#define __WINDOW_H 		
+	 
 #include "guix.h"  
 #include "button.h"
 //////////////////////////////////////////////////////////////////////////////////	 
@@ -49,9 +50,9 @@
 //圆边窗体边框颜色定义
 #define ARC_WIN_RIM_COLOR 	0XB595	    //边线颜色  
 
-
+#pragma pack (1)
 //window结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//window顶端坐标
 	uint16_t left;                       //window左端坐标
@@ -82,6 +83,7 @@ __packed typedef struct
 	uint16_t *bkctbl;					//背景色表(需要读取窗体背景色的时候用到)
 	_btn_obj* closebtn;				//串口关闭按钮
 }_window_obj;
+#pragma pack ()
 
 _window_obj * window_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t id,uint8_t type,uint8_t font);
 void window_delete(_window_obj * window_del);

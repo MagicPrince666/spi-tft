@@ -16,7 +16,7 @@ export AS LD CC CPP AR NM
 export STRIP OBJCOPY OBJDUMP
 
 CFLAGS := -Wall -O2 -g
-CFLAGS += -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./key -I./picture
+CFLAGS += -I../font -I../LCD -I../sys -I../touch -I../pwm -I../spi -I../key -I../picture
 
 LDFLAGS := -lpthread -lm -lrt -ldl
 
@@ -25,24 +25,14 @@ export CFLAGS LDFLAGS
 TOPDIR := $(shell pwd)
 export TOPDIR
 
-TARGET := show_file
 
+obj-y += button.o edit.o filelistbox.o gui.o listbox.o memo.o progressbar.o scrollbar.o window.o
 
-obj-y += main.o
-obj-y += LCD/
-obj-y += font/
-obj-y += sys/
-obj-y += touch/
-obj-y += pwm/
-obj-y += spi/
-obj-y += key/
-obj-y += picture/
-#obj-y += GUI/
 
 
 all : 
 	make -C ./ -f $(TOPDIR)/Makefile.build
-	$(CPP) $(LDFLAGS) -o $(TARGET) built-in.o 
+	$(CPP) $(LDFLAGS) -o built-in.o 
 
 
 clean:

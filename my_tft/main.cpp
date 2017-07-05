@@ -1,3 +1,15 @@
+/*****************************************************************************************
+
+ * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 文件名  main.cpp
+ * 描述    ：此处硬件初始化和线程控制
+ * 平台    ：linux
+ * 版本    ：V1.0.0
+ * 作者    ：小王子与木头人  QQ：846863428
+ *修改时间  ：2017-07-4
+
+*****************************************************************************************/
+
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -38,7 +50,6 @@ void xianshi()//显示信息
 	POINT_COLOR = RED;	
 	showhanzi(10,0,0);  //晶
 	showhanzi(45,0,1);  //耀
-	LCD_ShowString(80,16,"Magic prince");
     LCD_ShowString(10,35,"2.4 TFT SPI 240*320");
 	LCD_ShowString(10,55,"LCD_W:");	LCD_ShowNum(70,55,LCD_W,3);
 	LCD_ShowString(110,55,"LCD_H:");LCD_ShowNum(160,55,LCD_H,3);	
@@ -122,7 +133,7 @@ int main(int argc, char *argv[])
 	
 	printf("show image\n");
 
-	//LCD_ReadPoint(1,1);//读取不了点数据
+	//LCD_ReadPoint(1,1);//读取不了点数据 图形叠加不好弄
 
 	ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示图片
 

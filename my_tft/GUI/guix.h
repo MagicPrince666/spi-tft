@@ -1,10 +1,8 @@
 #ifndef __GUIX_H
-#define __GUIX_H 	
+#define __GUIX_H 
+
 #include "sys.h"
-#include "malloc.h"
-#include "lcd.h"
-#include "usart.h"
-#include "delay.h"
+#include "LCD.h"
 #include "string.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -61,8 +59,9 @@ extern uint8_t*const GUI_QUIT_CAPTION_TBL[GUI_LANGUAGE_NUM];		//退出按钮
 #define IN_TYPE_MOUSE	0X03
 #define IN_TYPE_ERR	 	0XFF
 
+#pragma pack (1)
 //gui输入接口
-__packed typedef struct 
+typedef struct 
 {
 	void (*get_key)(void*,uint8_t);	//获取键值参数
 	uint16_t x;						//坐标
@@ -80,7 +79,7 @@ extern _in_obj in_obj;
 //2,画点函数;
 //3,单色填充函数;
 //4,彩色填充函数
-__packed typedef struct 
+typedef struct 
 {
 	uint8_t language;							//GUI当前语言,取值范围0~GUI_LANGUAGE_NUM-1;
 	uint16_t memdevflag;							//存储设备状态;
@@ -104,6 +103,8 @@ __packed typedef struct
 	uint16_t lcdwidth;							//LCD的宽度
 	uint16_t lcdheight;							//LCD的高度
 }_gui_phy;
+#pragma pack ()
+
 extern _gui_phy gui_phy;
 
 uint16_t gui_alpha_blend565(uint16_t src,uint16_t dst,uint8_t alpha);						//alpha blending

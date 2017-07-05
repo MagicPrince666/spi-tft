@@ -58,8 +58,10 @@
 
 //固定宽高度定义
 #define FLBOX_SCB_WIDTH 		0X0E		//滚动条宽度为15个像素 
+
+#pragma pack (1)
 //filelist结构体.链表结构
-__packed typedef struct 
+typedef struct 
 {
 	void * prevlist;
 	void * nextlist;
@@ -68,7 +70,7 @@ __packed typedef struct
 }_filelistbox_list;
 
 //filelistbox结构体定义		  
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//filelistbox顶端坐标
 	uint16_t left;                       //filelistbox左端坐标
@@ -125,7 +127,7 @@ __packed typedef struct
 	_scrollbar_obj * scbv;			//垂直滚动条
 	_filelistbox_list *list; 		//链表	    
 }_filelistbox_obj;
-
+#pragma pack ()
 
 _filelistbox_obj * filelistbox_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t type,uint8_t font);//创建filelistbox
 _filelistbox_list * filelist_search(_filelistbox_list *filelistx,uint16_t index);		//查找编号为index的list,并取得详细信息

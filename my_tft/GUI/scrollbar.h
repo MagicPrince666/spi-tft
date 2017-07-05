@@ -45,8 +45,9 @@
 #define SCLB_DFT_BTNCOLOR		0X2DDA //0X031F		//填充色B颜色
 #define SCLB_DFT_RIMCOLOR		0X4A49		//边框颜色
 
+#pragma pack (1)
 //滚动条结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//按钮顶端坐标
 	uint16_t left;                       //按钮左端坐标
@@ -66,7 +67,7 @@ __packed typedef struct
 	uint16_t btncolor;					//符号按钮填充色
 	uint16_t rimcolor;					//边框颜色
 }_scrollbar_obj;
-
+#pragma pack ()
 
 _scrollbar_obj * scrollbar_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t type);
 void scrollbar_delete(_scrollbar_obj *scrollbar_del);	 

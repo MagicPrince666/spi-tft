@@ -29,9 +29,9 @@
 #define EDIT_DFT_TBKC 	0XFFFF		//默认的文本背景色
 #define EDIT_DFT_TXTC 	0X0000		//默认的文本颜色
 
-
+#pragma pack (1)
 //EDIT结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//编辑框顶端坐标
 	uint16_t left;                       //编辑框左端坐标
@@ -60,6 +60,7 @@ __packed typedef struct
 	uint16_t textcolor; 				  	//文字颜色
 	uint16_t textbkcolor;				//文字背景色
 }_edit_obj;
+#pragma pack ()
 
 _edit_obj * edit_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t id,uint8_t type,uint8_t font);
 void edit_delete(_edit_obj * edit_del);

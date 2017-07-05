@@ -49,9 +49,9 @@
 #define BTN_TYPE_TEXTA 	0X03
 #define BTN_TYPE_TEXTB 	0X04
 
-
+#pragma pack (1)
 //按钮结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//按钮顶端坐标
 	uint16_t left;                       //按钮左端坐标
@@ -89,6 +89,7 @@ __packed typedef struct
 	uint8_t *picbtnpathu;				//图片按钮松开时的图片路径
 	uint8_t *picbtnpathd;		 		//图片按钮按下时的图片路径
 }_btn_obj;
+#pragma pack ()
 
 void btn_read_backcolor(_btn_obj * btnx);
 void btn_recover_backcolor(_btn_obj * btnx);

@@ -1,5 +1,6 @@
 #ifndef __PROGRESSBAR_H
-#define __PROGRESSBAR_H 	 
+#define __PROGRESSBAR_H 
+	 
 #include "guix.h" 	
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -36,9 +37,9 @@
 
 #define PRGB_BTN_DOWN			0X01  		//中间按钮被按下了
 
-
+#pragma pack (1)
 //进度条结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//进度条顶端坐标
 	uint16_t left;                       //进度条左端坐标
@@ -65,7 +66,7 @@ __packed typedef struct
  	uint16_t btncolor;					//浮标填充色(标准prg时为内部滑动点的颜色,百分数prg时,为字体颜色,扩展时,无效)
 	uint16_t rimcolor;					//边框颜色
 }_progressbar_obj;
-
+#pragma pack ()
 
 _progressbar_obj * progressbar_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t type);
 uint8_t progressbar_check(_progressbar_obj * prgbx,void * in_key);

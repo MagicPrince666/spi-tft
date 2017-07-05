@@ -1,3 +1,14 @@
+/*****************************************************************************************
+
+ * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 文件名  touch.cpp
+ * 描述    ：触摸控制
+ * 平台    ：linux
+ * 版本    ：V1.0.0
+ * 作者    ：小王子与木头人  QQ：846863428
+ *修改时间  ：2017-07-4
+
+*****************************************************************************************/
 #include <unistd.h>
 #include "sys.h"
 #include "touch.h"
@@ -160,10 +171,10 @@ void Drow_Touch_Point(uint16_t x,uint16_t y)
 {
 	LCD_DrawLine(x-12,y,x+13,y);//横线
 	LCD_DrawLine(x,y-12,x,y+13);//竖线
-	LCD_DrawPoint(x+1,y+1);
-	LCD_DrawPoint(x-1,y+1);
-	LCD_DrawPoint(x+1,y-1);
-	LCD_DrawPoint(x-1,y-1);
+	LCD_DrawPoint(x+1,y+1,POINT_COLOR);
+	LCD_DrawPoint(x-1,y+1,POINT_COLOR);
+	LCD_DrawPoint(x+1,y-1,POINT_COLOR);
+	LCD_DrawPoint(x-1,y-1,POINT_COLOR);
 //	Draw_Circle(x,y,6);//画中心圈
 }	  
 //转换结果

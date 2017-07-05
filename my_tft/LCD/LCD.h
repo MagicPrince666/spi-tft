@@ -1,6 +1,18 @@
 #ifndef __LCD_H
 #define __LCD_H
 
+/*****************************************************************************************
+
+ * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 文件名  LCD.h
+ * 描述    ：
+ * 平台    ：linux
+ * 版本    ：V1.0.0
+ * 作者    ：小王子与木头人  QQ：846863428
+ *修改时间  ：2017-07-4
+
+*****************************************************************************************/
+
 #include <inttypes.h>
 #include "sys.h"
 
@@ -68,7 +80,7 @@ void LCD_Color_Fill(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,uint16_t *co
 void LCD_DrawPoint(uint16_t x,uint16_t y,uint16_t color);
 void LCD_Fast_DrawPoint(uint16_t x,uint16_t y,uint16_t color);
 uint16_t LCD_ReadPoint(uint16_t x,uint16_t y);
-void LCD_DrawPoint(uint16_t x,uint16_t y);//画点
+//void LCD_DrawPoint(uint16_t x,uint16_t y);//画点
 void LCD_DrawPoint_big(uint16_t x,uint16_t y);//画一个大点
 uint16_t  LCD_ReadPoint(uint16_t x,uint16_t y); //读点
 void Draw_Circle(uint16_t x0,uint16_t y0,uint8_t r);

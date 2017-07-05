@@ -1,5 +1,6 @@
 #ifndef __MEMO_H
-#define __MEMO_H 			 
+#define __MEMO_H 	
+		 
 #include "guix.h"  
 #include "scrollbar.h"
 //////////////////////////////////////////////////////////////////////////////////	 
@@ -26,9 +27,9 @@
 //memo的滚动条宽度定义
 #define MEMO_SCB_WIDTH 	0X0E		//滚动条宽度为15个像素
 
-
+#pragma pack (1)
 //memo结构体定义
-__packed typedef struct 
+typedef struct 
 {
 	uint16_t top; 				  		//memo顶端坐标
 	uint16_t left;                       //memo左端坐标
@@ -65,6 +66,7 @@ __packed typedef struct
 	uint16_t textcolor; 				  	//文字颜色
 	uint16_t textbkcolor;				//文字背景色
 }_memo_obj;
+#pragma pack ()
 
 _memo_obj * memo_creat(uint16_t left,uint16_t top,uint16_t width,uint16_t height,uint8_t id,uint8_t type,uint8_t font,uint32_t textlen);
 void memo_delete(_memo_obj * memo_del);

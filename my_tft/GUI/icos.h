@@ -1,5 +1,6 @@
 #ifndef __ICOS_H
 #define __ICOS_H 
+
 #include "sys.h"
 
 //256色的图标集,16*16大小.

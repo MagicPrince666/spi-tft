@@ -1,3 +1,14 @@
+/***************************************************************************************
+
+ * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 文件名  LCD.cpp
+ * 描述    ：液晶驱动
+ * 平台    ：linux
+ * 版本    ：V1.0.0
+ * 作者    ：小王子与木头人  QQ：846863428
+ *修改时间  ：2017-07-4
+
+*****************************************************************************************/
 #include <unistd.h>
 #include <stdio.h>
 #include "font.h"
@@ -633,7 +644,7 @@ void showhanzi(unsigned int x,unsigned int y,unsigned char index)
 }
 //画点
 //POINT_COLOR:此点的颜色
-void LCD_DrawPoint(uint16_t x,uint16_t y)
+static void LCD_DrawPoint(uint16_t x,uint16_t y)
 {
 	Address_set(x,y,x,y);//设置光标位置 
 	LCD_WR_DATA(POINT_COLOR); 	    
