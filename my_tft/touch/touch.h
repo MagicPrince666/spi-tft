@@ -42,6 +42,8 @@ struct tp_pixuint32_t_
 	uint32_t x;
 	uint32_t y;
 };
+
+extern int run; 
 extern struct tp_pix_  tp_pixad,tp_pixlcd;	 //当前触控坐标的AD值,前触控坐标的像素值   
 extern uint16_t vx,vy;  //比例因子，此值除以1000之后表示多少个AD值代表一个像素点
 extern uint16_t chx,chy;//默认像素点坐标为0时的AD起始值
