@@ -189,7 +189,9 @@ uint8_t Convert_Pos(void)
 		tp_pixlcd.y = tp_pixad.y>chy?((uint32_t)tp_pixad.y-(uint32_t)chy)*1000/vy:((uint32_t)chy-(uint32_t)tp_pixad.y)*1000/vy;
 	}
 	return l;
-}	   
+}
+
+int run = 1;
 //触摸屏校准代码
 //得到四个校准参数
 #define tp_pianyi 50   //校准坐标偏移量	
