@@ -30,10 +30,10 @@ uint8_t ref = 0;//刷新显示
 
 void my_quit()
 {
-	pwm_disable(1);
-	pwm_disable(2);
-	pwm_disable(3);
-	pwm_disable(4);
+	// pwm_disable(1);
+	// pwm_disable(2);
+	// pwm_disable(3);
+	// pwm_disable(4);
 	//close(gpio_mmap_fd);
 	//SPI_Close();
 	//I2C_close();
@@ -113,12 +113,6 @@ void rtp_test(void)
 				else TP_Draw_Big_Point(tp_dev.x[0],tp_dev.y[0],RED);		//画图	  			   
 			}
 		}else usleep(10*1000);	//没有按键按下的时候 	    
-		if(KEY_2 == 0)	//KEY0按下,则执行校准程序
-		{
-			LCD_Clear(WHITE);	//清屏
-		    TP_Adjust();  		//屏幕校准 
-			Load_Drow_Dialog();
-		}
 		if(KEY_1 == 0)	//如果按键2按下,退出程序 
 		break;
 	}
@@ -151,11 +145,6 @@ void ctp_test(void)
 					}
 				}
 			}else lastpos[t][0]=0XFFFF;
-		}
-		if(KEY_2 == 0)	//如果按键2按下,退出程序 
-		{
-			my_quit();
-			printf("quit!\n");
 		}
 		usleep(5*1000);
 	}	
@@ -201,11 +190,6 @@ uint8_t jiance() //检测触摸和按键
 			
 		return 1;
 	}
-	if(KEY_2 == 0)	//如果按键2按下,退出程序 
-	{
-		my_quit();
-		printf("quit!\n");
-	}
 	 
 	return 0;
 }
@@ -214,9 +198,9 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
 
-	Show_Str(10,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
-	Show_Str(10,26,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
-	Show_Str(10,44,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
+	Show_Str(0,26,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
+	Show_Str(0,44,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
 }
 void showqq()
 { 
@@ -273,7 +257,7 @@ int main(int argc, char *argv[])
 	pthread_t pthread_id[3];//线程ID
     pthread_mutex_init(&mut,NULL);
 
-	pwm_init();
+	//pwm_init();
 	Lcd_Init();   //tft初始化
 	Init_Key();
 	gui_init();
@@ -302,9 +286,6 @@ int main(int argc, char *argv[])
 	
 	piclib_init();				//piclib初始化	
 	printf("Init piclib\n");
-
-	LCD_DrawPoint(1,1);
-	LCD_ReadPoint(1,1);//读取不了点数据
 
 	printf("show jpg\n");
 	ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片

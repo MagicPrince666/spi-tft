@@ -17,7 +17,7 @@
 //IO操作函数	 
 #define GT_RST_1    	mt76x8_gpio_set_pin_value(42, 1)	//GT9147复位引脚
 #define GT_RST_0    	mt76x8_gpio_set_pin_value(42, 0)
-#define GT_INT    		mt76x8_gpio_get_pin(1)		//GT9147中断引脚	
+#define GT_INT    		mt76x8_gpio_get_pin(41)		//GT9147中断引脚	
    	
  
 //I2C读写命令	

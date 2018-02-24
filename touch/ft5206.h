@@ -18,7 +18,7 @@
 //IO操作函数	 
 #define FT_RST_1    			mt76x8_gpio_set_pin_value(42, 1)	//FT5206复位引脚
 #define FT_RST_0    			mt76x8_gpio_set_pin_value(42, 0)
-#define FT_INT    				mt76x8_gpio_get_pin(1)		//FT5206中断引脚
+#define FT_INT    				mt76x8_gpio_get_pin(41)		//FT5206中断引脚
 
 
 //I2C读写命令	

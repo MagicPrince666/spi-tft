@@ -1,54 +1,31 @@
+
 CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
-#export PATH=$PATH:/Volumes/OpenWrt/openwrt_widora/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin
-#export STAGING_DIR=/Volumes/OpenWrt/openwrt_widora/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin:$STAGING_DIR
-AS		= $(CROSS_COMPILE)as
-LD		= $(CROSS_COMPILE)ld
-CC		= $(CROSS_COMPILE)gcc
-CPP		= $(CROSS_COMPILE)g++
-AR		= $(CROSS_COMPILE)ar
-NM		= $(CROSS_COMPILE)nm
+CPP = $(CROSS_COMPILE)g++
 
-STRIP		= $(CROSS_COMPILE)strip
-OBJCOPY		= $(CROSS_COMPILE)objcopy
-OBJDUMP		= $(CROSS_COMPILE)objdump
+#目标文件
+TARGET	= 3.2tft
 
-export AS LD CC CPP AR NM
-export STRIP OBJCOPY OBJDUMP
+#所有的目录
+DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./text ./GUI ./music
+INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture -I./mpu6050 -I./text -I./GUI -I./music
+CFLAGS	= -O2 -g -Wall
+LDFLAGS += -L./lib -lpthread -lm -lrt -ldl -liconv
 
-CFLAGS := -Wall -O2 -g #-finput-charset=GB2312 -fexec-charset=GB2312
-CFLAGS += -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture -I./mpu6050 -I./text -I./GUI -I./music
+OBJPATH	= ./obj
 
-LDFLAGS := -lpthread -lm -lrt -ldl -L./text/lib -liconv 
+FILES	= $(foreach dir,$(DIR),$(wildcard $(dir)/*.cpp))
 
-export CFLAGS LDFLAGS
+OBJS	= $(patsubst %.cpp,%.o,$(FILES))
 
-TOPDIR := $(shell pwd)
-export TOPDIR
+all:$(OBJS) $(TARGET)
 
-TARGET := show_file
+$(OBJS):%.o:%.cpp
+	$(CPP) $(CFLAGS) $(INC) -c -o $(OBJPATH)/$(notdir $@) $< 
 
-
-obj-y += main.o
-obj-y += LCD/
-obj-y += sys/
-obj-y += touch/
-obj-y += pwm/
-obj-y += spi/
-obj-y += iic/
-obj-y += key/
-obj-y += picture/
-obj-y += mpu6050/
-obj-y += text/
-obj-y += GUI/
-obj-y += music/
-
-
-all : 
-	make -C ./ -f $(TOPDIR)/Makefile.build
-	$(CPP) $(LDFLAGS) -o $(TARGET) built-in.o 
+$(TARGET):$(OBJPATH)
+	$(CPP) -o $@ $(OBJPATH)/*.o $(LDFLAGS) 
 
 clean:
-	rm -f $(shell find . -name "*.o")
-	rm -f $(shell find . -name "*.d")
-	rm -f $(TARGET)
+	-rm -f $(OBJPATH)/*.o
+	-rm -f $(TARGET)
 	

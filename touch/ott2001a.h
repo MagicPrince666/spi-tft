@@ -20,7 +20,7 @@
 //IO操作函数	 
 #define OTT_RST_1    	mt76x8_gpio_set_pin_value(42, 1)	//OTT2001A复位引脚
 #define OTT_RST_0    	mt76x8_gpio_set_pin_value(42, 0)
-#define OTT_INT    		mt76x8_gpio_get_pin(1)		//OTT2001A中断引脚	
+#define OTT_INT    		mt76x8_gpio_get_pin(41)		//OTT2001A中断引脚	
   
   
 //通过OTT_SET_REG指令,可以查询到这个信息 

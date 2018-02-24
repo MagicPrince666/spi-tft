@@ -481,39 +481,14 @@ void LCD_delay(int t)
 
 void Lcd_Init(void)
 {
-    int MyPeriod = 1000000; //period 设置 10ms
-	float rate = 0.3;
-    int MyDuty = MyPeriod * rate;
-
-	/*export corresponding PWM Channel*/
-	if(pwm_export(1) < 0){
-		printf("PWM export error!\n");
-	}
-	if(pwm_disable(1) < 0){
-		printf("PWM disable error!\n");
-	}
-	/* set period and duty cycle time in ns */
-	if(pwm_config(1, MyPeriod, MyDuty) < 0){
-		printf("PWM configure error!\n");
-	}
-	/* enable corresponding PWM Channel */
-	if(pwm_enable(1) < 0){
-		printf("PWM enable error!\n");
-	}
 	//printf("PWM_A successfully enabled with period - %dms, duty cycle - %2.1f%%\n", MyPeriod/1000000, rate*100);
 	if (gpio_mmap())
 		printf("error\n");
 
 	mt76x8_gpio_set_pin_direction(11, 1);
-	mt76x8_gpio_set_pin_direction(17, 1);
-	//mt76x8_gpio_set_pin_direction(42, 1);
-	//spistar();//模拟SPI初始化
+
 	SPI_Open();//硬件SPI初始化
 	
-	LCD_REST_0;
-	usleep(5 * 1000);
-	LCD_REST_1;
-	usleep(200 * 1000);
 	
 	lcddev.dir = 0;	//竖屏
 	lcddev.width = 240;

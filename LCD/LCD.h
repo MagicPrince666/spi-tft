@@ -21,8 +21,8 @@ extern uint16_t SPI_LCD_RAM[320*480];//缓存大小
 typedef struct  
 {										    
 	uint16_t width;			//LCD 宽度
-	uint16_t height;			//LCD 高度
-	uint16_t id;				//LCD ID
+	uint16_t height;		//LCD 高度
+	uint16_t id;			//LCD ID
 	uint8_t  dir;			//横屏还是竖屏控制：0，竖屏；1，横屏。	
 	uint16_t	wramcmd;		//开始写gram指令
 	uint16_t  setxcmd;		//设置x坐标指令
@@ -32,17 +32,8 @@ typedef struct
 extern _lcd_dev lcddev;	//管理LCD重要参数
 //IO连接  
 
-// #define LCD_DC_1 mt76x8_gpio_set_pin_value(42, 1)
-// #define LCD_DC_0 mt76x8_gpio_set_pin_value(42, 0)
-
-// #define LCD_REST_1 mt76x8_gpio_set_pin_value(11, 1)
-// #define LCD_REST_0 mt76x8_gpio_set_pin_value(11, 0)
-
-#define LCD_DC_1 mt76x8_gpio_set_pin_value(17, 1)
-#define LCD_DC_0 mt76x8_gpio_set_pin_value(17, 0)
-
-#define LCD_REST_1 mt76x8_gpio_set_pin_value(11, 1)
-#define LCD_REST_0 mt76x8_gpio_set_pin_value(11, 0)
+#define LCD_DC_1 mt76x8_gpio_set_pin_value(11, 1)
+#define LCD_DC_0 mt76x8_gpio_set_pin_value(11, 0)
 
 //扫描方向定义
 #define L2R_U2D  0 //从左到右,从上到下
