@@ -2,10 +2,8 @@
 CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
 CPP = $(CROSS_COMPILE)g++
 
-#目标文件
 TARGET	= 3.2tft
 
-#所有的目录
 DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./text ./GUI ./music
 INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture -I./mpu6050 -I./text -I./GUI -I./music
 CFLAGS	= -O2 -g -Wall
