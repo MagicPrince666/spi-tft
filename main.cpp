@@ -198,22 +198,11 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
 
-	LCD_Display_Dir(0);
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"1 小王子与木头人",12,0x00);
-	LCD_Display_Dir(1);
-	Show_Str(0,12*1,lcddev.width,lcddev.height,(const uint8_t *)"2 小王子与木头人",12,0x00);
-	LCD_Display_Dir(2); 
-	Show_Str(0,12*2,lcddev.width,lcddev.height,(const uint8_t *)"3 小王子与木头人",12,0x00);
-	LCD_Display_Dir(3);
-	Show_Str(0,12*3,lcddev.width,lcddev.height,(const uint8_t *)"4 小王子与木头人",12,0x00);
-	LCD_Display_Dir(4);
-	Show_Str(0,12*4,lcddev.width,lcddev.height,(const uint8_t *)"5 小王子与木头人",12,0x00);
-	LCD_Display_Dir(5);
-	Show_Str(0,12*5,lcddev.width,lcddev.height,(const uint8_t *)"6 小王子与木头人",12,0x00);
-	LCD_Display_Dir(6);
-	Show_Str(0,12*6,lcddev.width,lcddev.height,(const uint8_t *)"7 小王子与木头人",12,0x00);
-	LCD_Display_Dir(7);
-	Show_Str(0,12*7,lcddev.width,lcddev.height,(const uint8_t *)"8 小王子与木头人",12,0x00);
+	LCD_Display_Dir(D2U_L2R);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"0 小王子与木头人",24,0x00);
+	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"1 小王子与木头人",16,0x00);
+	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"2 小王子与木头人",12,0x00);
+	LCD_Display_Dir(L2R_U2D);
 }
 void showqq()
 { 
@@ -235,8 +224,8 @@ void showqq()
 void showimage() //显示40*40图片
 {
 	LCD_Clear(WHITE); //清屏  
-	//showqq();
-	xianshi(); //显示信息 中文显示有bug
+	xianshi(); //显示信息 
+	showqq();
 	ref = 0;				
 }
 
