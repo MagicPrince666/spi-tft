@@ -233,36 +233,13 @@ static void sigint_handler(int sig)
     printf("-----@@@@@ sigint_handler  is over !\n"); 
 }
 
-void * thread_1 (void *arg) 
+void * thread_tft (void *arg) 
 {
-	printf("ctrl + c to stop!\n"); 
-	while(run)
-	{							
-		if(jiance()) //检测触摸和按键
-		{
-			ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
-			//LCD_DrawRectangle(12,16,228,304);
-		}
-	  	if(ref)
-		  	ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
-		usleep(1000);
-    }
-	pthread_exit(NULL);
-}
-
-pthread_mutex_t mut;//声明互斥变量 
-
-int main(int argc, char *argv[])
-{ 
-	pthread_t pthread_id[3];//线程ID
-    pthread_mutex_init(&mut,NULL);
-
-	//pwm_init();
 	Lcd_Init();   //tft初始化
 	Init_Key();
 	gui_init();
 	//I2C_open();
-	//MPU6050_Init();
+	
 
 	time_t timer;//time_t就是long int 类型
 	int times = 0;
@@ -300,15 +277,98 @@ int main(int argc, char *argv[])
 	printf("touch init\n");
 	showimage();
 
+	while(run)
+	{							
+		if(jiance()) //检测触摸和按键
+		{
+			ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+			//LCD_DrawRectangle(12,16,228,304);
+		}
+	  	if(ref)
+		  	ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+		usleep(1000);
+    }
+	close(gpio_mmap_fd);
+	SPI_Close();
+	pthread_exit(NULL);
+}
+
+void * pwm_thread (void *arg)
+{
+	pwm_init();
+	int MyPeriod = 20000000; //period 设置 1s
+    int MyDuty =   1000000;
+	bool flag=false;
+
+	printf("init pwm\n");
+
+	while(run)
+	{
+		if(flag == false)
+			MyDuty +=   10000;
+		else MyDuty -=   10000;
+		
+		if(MyDuty >= 2000000)	
+			flag = true;
+		if(MyDuty <= 1000000)	
+			flag = false;
+
+		if(pwm_config(4, MyPeriod, MyDuty) < 0)break;
+
+		sleep(1);
+	}
+	printf("exit pwm thread\n");
+	pwm_disable(1);
+	pwm_disable(2);
+	pwm_disable(3);
+	pwm_disable(4);
+	pthread_exit(NULL);
+}
+
+void * oled_thread (void *arg)
+{
+	I2C_open();
+	//MPU6050_Init();
+	while(run)
+	{
+		sleep(1);
+	}
+
+	printf("exit oled thread\n");
+	I2C_close();
+	pthread_exit(NULL);
+}
+
+pthread_mutex_t mut;//声明互斥变量 
+
+int main(int argc, char *argv[])
+{ 
+	pthread_t pthread_id[3];//线程ID
+    pthread_mutex_init(&mut,NULL);
 
 	signal(SIGINT, sigint_handler);//信号处理
 
-	if (pthread_create(&pthread_id[0], NULL, thread_1 , NULL))
-        printf("Create thread_1 error!\n");
+	if (pthread_create(&pthread_id[0], NULL, thread_tft , NULL))
+        printf("Create thread_tft error!\n");
+	if (pthread_create(&pthread_id[1], NULL, pwm_thread , NULL))
+        printf("Create pwm_thread error!\n");
+	if (pthread_create(&pthread_id[2], NULL, oled_thread , NULL))
+        printf("Create oled_thread error!\n");
+
+	printf("ctrl + c to stop!\n"); 
 
     if(pthread_id[0] != 0) {                   
         pthread_join(pthread_id[0],NULL);
-        printf("thread_1 %ld exit!\n",pthread_id[0]);
+        printf("thread_tft %ld exit!\n",pthread_id[0]);
 	}
+	if(pthread_id[1] != 0) {                   
+        pthread_join(pthread_id[1],NULL);
+        printf("pwm_thread %ld exit!\n",pthread_id[1]);
+	}
+	if(pthread_id[2] != 0) {                   
+        pthread_join(pthread_id[2],NULL);
+        printf("oled_thread %ld exit!\n",pthread_id[2]);
+	}
+	
 	return 0;
 }

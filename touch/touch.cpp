@@ -40,7 +40,8 @@ void TP_Write_Byte(uint8_t num)
 		if(num&0x80)TDIN_1;  
 		else TDIN_0;   
 		num<<=1;    
-		TCLK_0; 	 
+		TCLK_0; 
+		//usleep(1);	 
 		TCLK_1;		//上升沿有效	        
 	}		 			    
 }
@@ -61,16 +62,20 @@ uint16_t TP_Read_AD(uint8_t CMD)
 	usleep(6);//ADS7846的转换时间最长为6us
 	TCLK_0; 	     	    
 	usleep(1);    	   
-	TCLK_1;		//给1个时钟，清除BUSY	    	    
+	TCLK_1;		//给1个时钟，清除BUSY	
+	usleep(1);    	    
 	TCLK_0; 		
-	for(count=0;count<12;count++)//读出16位数据,只有高12位有效 
+	for(count = 0; count < 16; count++)//读出16位数据,只有高12位有效 
 	{ 				  
 		Num<<=1; 	 
-		TCLK_0;	//下降沿有效      	   
+		TCLK_0;	//下降沿有效    
+		//usleep(1);  	   
 		TCLK_1;
 		if(DOUT)Num++; 		 
 	}   	//只有高12位有效.
-	TCS_1;		//释放片选	 
+	Num >>= 4;
+	TCS_1;		//释放片选	
+
 #else	  
 	uint16_t Num=0;  	 
 	TCS_0; 		//选中触摸屏IC
@@ -81,6 +86,7 @@ uint16_t TP_Read_AD(uint8_t CMD)
 	Num>>=4;   	//只有高12位有效.
 	TCS_1;		//释放片选	 
 #endif
+
 	return(Num);   
 }
 //读取一个坐标值(x或者y)
@@ -97,11 +103,11 @@ uint16_t TP_Read_XOY(uint8_t xy)
 	uint16_t sum=0;
 	uint16_t temp;
 	for(i=0;i<READ_TIMES;i++)buf[i]=TP_Read_AD(xy);		 		    
-	for(i=0;i<READ_TIMES-1; i++)//排序
+	for(i=0;i<READ_TIMES-1; i++)
 	{
 		for(j=i+1;j<READ_TIMES;j++)
 		{
-			if(buf[i]>buf[j])//升序排列
+			if(buf[i]>buf[j])
 			{
 				temp=buf[i];
 				buf[i]=buf[j];
@@ -186,26 +192,26 @@ void TP_Draw_Big_Point(uint16_t x,uint16_t y,uint16_t color)
 //0,触屏无触摸;1,触屏有触摸
 uint8_t TP_Scan(uint8_t tp)
 {			   
-	if(PEN==0)//有按键按下
+	if(PEN==0)
 	{
-		if(tp)TP_Read_XY2(&tp_dev.x[0],&tp_dev.y[0]);//读取物理坐标
-		else if(TP_Read_XY2(&tp_dev.x[0],&tp_dev.y[0]))//读取屏幕坐标
+		if(tp)TP_Read_XY2(&tp_dev.x[0],&tp_dev.y[0]);
+		else if(TP_Read_XY2(&tp_dev.x[0],&tp_dev.y[0]))
 		{
-	 		tp_dev.x[0]=tp_dev.xfac*tp_dev.x[0]+tp_dev.xoff;//将结果转换为屏幕坐标
+	 		tp_dev.x[0]=tp_dev.xfac*tp_dev.x[0]+tp_dev.xoff;
 			tp_dev.y[0]=tp_dev.yfac*tp_dev.y[0]+tp_dev.yoff;  
 	 	} 
-		if((tp_dev.sta&TP_PRES_DOWN)==0)//之前没有被按下
+		if((tp_dev.sta&TP_PRES_DOWN)==0)
 		{		 
-			tp_dev.sta=TP_PRES_DOWN|TP_CATH_PRES;//按键按下  
-			tp_dev.x[4]=tp_dev.x[0];//记录第一次按下时的坐标
+			tp_dev.sta=TP_PRES_DOWN|TP_CATH_PRES;
+			tp_dev.x[4]=tp_dev.x[0];
 			tp_dev.y[4]=tp_dev.y[0];  	   			 
 		}			   
 	}else
 	{
-		if(tp_dev.sta&TP_PRES_DOWN)//之前是被按下的
+		if(tp_dev.sta&TP_PRES_DOWN)
 		{
-			tp_dev.sta&=~(1<<7);//标记按键松开	
-		}else//之前就没有被按下
+			tp_dev.sta&=~(1<<7);
+		}else
 		{
 			tp_dev.x[4]=0;
 			tp_dev.y[4]=0;
@@ -213,7 +219,7 @@ uint8_t TP_Scan(uint8_t tp)
 			tp_dev.y[0]=0xffff;
 		}	    
 	}
-	return tp_dev.sta&TP_PRES_DOWN;//返回当前的触屏状态
+	return tp_dev.sta&TP_PRES_DOWN;
 }	  
 //////////////////////////////////////////////////////////////////////////	 
 //保存在EEPROM里面的地址区间基址,占用13个字节(RANGE:SAVE_ADDR_BASE~SAVE_ADDR_BASE+12)
@@ -556,6 +562,7 @@ uint8_t TP_Init(void)
 		TCS_1;
 		TDIN_1;
 		TCLK_1;
+		
 		TP_Read_XY(&tp_dev.x[0],&tp_dev.y[0]);//第一次读取初始化	 
 		if(TP_Get_Adjdata())return 0;//已经校准
 		else			   //未校准?

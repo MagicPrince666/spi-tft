@@ -50,11 +50,11 @@ extern _m_tp_dev tp_dev;	 	//触屏控制器在touch.c里面定义
 #define TDIN_1 		mt76x8_gpio_set_pin_value(17, 1)  	// MOSI
 #define TDIN_0 		mt76x8_gpio_set_pin_value(17, 0) 
 
-#define TCLK_1 		mt76x8_gpio_set_pin_value(14, 1)  	// SCLK
-#define TCLK_0 		mt76x8_gpio_set_pin_value(14, 0)
+#define TCLK_1 		mt76x8_gpio_set_pin_value(15, 1)  	// SCLK
+#define TCLK_0 		mt76x8_gpio_set_pin_value(15, 0)
 
-#define TCS_1  		mt76x8_gpio_set_pin_value(15, 1)  	// CS 
-#define TCS_0  		mt76x8_gpio_set_pin_value(15, 0)
+#define TCS_1  		mt76x8_gpio_set_pin_value(14, 1)  	// CS 
+#define TCS_0  		mt76x8_gpio_set_pin_value(14, 0)
 
    
 //电阻屏函数

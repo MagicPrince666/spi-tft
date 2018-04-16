@@ -1,0 +1,5 @@
+SpiTft
+obj/*.o
+12864/
+tp-adj
+.DS_Store
