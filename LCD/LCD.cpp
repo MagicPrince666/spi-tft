@@ -336,7 +336,7 @@ void LCD_Scan_Dir(uint8_t dir)
 	//LCD_WR_REG_DATA(0x36,regval|0x8);
 	LCD_WR_REG(0x36);    // Memory Access Control 
 	LCD_WR_DATA8(regval|0x8); 
-	
+
 	if((regval&0X20))//横屏
 	{
 		if(lcddev.width<lcddev.height)//交换X,Y
@@ -478,7 +478,6 @@ void LCD_delay(int t)
 
 void Lcd_Init(void)
 {
-	//printf("PWM_A successfully enabled with period - %dms, duty cycle - %2.1f%%\n", MyPeriod/1000000, rate*100);
 	if (gpio_mmap())
 		printf("error\n");
 
@@ -791,7 +790,6 @@ void Lcd_Init(void)
 	}
 
 	LCD_Display_Dir(DFT_SCAN_DIR);
-	//LCD_Display_Dir(L2R_D2U);
 }
 
 //清屏函数

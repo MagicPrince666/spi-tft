@@ -199,9 +199,9 @@ void xianshi()//显示信息
 	POINT_COLOR = RED;	
 
 	LCD_Display_Dir(D2U_L2R);
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"0 小王子与木头人",24,0x00);
-	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"1 小王子与木头人",16,0x00);
-	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"2 小王子与木头人",12,0x00);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
+	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
+	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
 	LCD_Display_Dir(L2R_U2D);
 }
 void showqq()
@@ -224,8 +224,8 @@ void showqq()
 void showimage() //显示40*40图片
 {
 	LCD_Clear(WHITE); //清屏  
-	xianshi(); //显示信息 
 	showqq();
+	xianshi(); //显示信息 
 	ref = 0;				
 }
 
@@ -274,9 +274,12 @@ void * thread_tft (void *arg)
 	ai_load_picfile((uint8_t*)"test.bmp",12,16,228,304,1,T_BMP);//显示当前目录bmp图片
 	usleep(100*1000);
 	LCD_Clear(WHITE);
+
 	// printf("show git\n");
+	// LCD_Display_Dir(D2U_L2R);//横屏显示
 	// ai_load_picfile((uint8_t*)"test.git",12,16,300,184,1,T_GIF);//显示当前目录bmp图片
 	// usleep(100*1000);
+	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
 	tp_dev.init();//触摸初始化
