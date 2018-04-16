@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 
  * 文件名  main.cpp
  * 描述    ：此处硬件初始化和线程控制
  * 平台    ：linux
@@ -198,9 +198,22 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
 
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
-	Show_Str(0,26,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
-	Show_Str(0,44,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
+	LCD_Display_Dir(0);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"1 小王子与木头人",12,0x00);
+	LCD_Display_Dir(1);
+	Show_Str(0,12*1,lcddev.width,lcddev.height,(const uint8_t *)"2 小王子与木头人",12,0x00);
+	LCD_Display_Dir(2); 
+	Show_Str(0,12*2,lcddev.width,lcddev.height,(const uint8_t *)"3 小王子与木头人",12,0x00);
+	LCD_Display_Dir(3);
+	Show_Str(0,12*3,lcddev.width,lcddev.height,(const uint8_t *)"4 小王子与木头人",12,0x00);
+	LCD_Display_Dir(4);
+	Show_Str(0,12*4,lcddev.width,lcddev.height,(const uint8_t *)"5 小王子与木头人",12,0x00);
+	LCD_Display_Dir(5);
+	Show_Str(0,12*5,lcddev.width,lcddev.height,(const uint8_t *)"6 小王子与木头人",12,0x00);
+	LCD_Display_Dir(6);
+	Show_Str(0,12*6,lcddev.width,lcddev.height,(const uint8_t *)"7 小王子与木头人",12,0x00);
+	LCD_Display_Dir(7);
+	Show_Str(0,12*7,lcddev.width,lcddev.height,(const uint8_t *)"8 小王子与木头人",12,0x00);
 }
 void showqq()
 { 
@@ -222,7 +235,7 @@ void showqq()
 void showimage() //显示40*40图片
 {
 	LCD_Clear(WHITE); //清屏  
-	showqq();
+	//showqq();
 	xianshi(); //显示信息 中文显示有bug
 	ref = 0;				
 }
@@ -272,6 +285,10 @@ void * thread_tft (void *arg)
 	ai_load_picfile((uint8_t*)"test.bmp",12,16,228,304,1,T_BMP);//显示当前目录bmp图片
 	usleep(100*1000);
 	LCD_Clear(WHITE);
+	// printf("show git\n");
+	// ai_load_picfile((uint8_t*)"test.git",12,16,300,184,1,T_GIF);//显示当前目录bmp图片
+	// usleep(100*1000);
+	// LCD_Clear(WHITE);
 	
 	tp_dev.init();//触摸初始化
 	printf("touch init\n");
@@ -350,10 +367,10 @@ int main(int argc, char *argv[])
 
 	if (pthread_create(&pthread_id[0], NULL, thread_tft , NULL))
         printf("Create thread_tft error!\n");
-	if (pthread_create(&pthread_id[1], NULL, pwm_thread , NULL))
-        printf("Create pwm_thread error!\n");
-	if (pthread_create(&pthread_id[2], NULL, oled_thread , NULL))
-        printf("Create oled_thread error!\n");
+	// if (pthread_create(&pthread_id[1], NULL, pwm_thread , NULL))
+    //     printf("Create pwm_thread error!\n");
+	// if (pthread_create(&pthread_id[2], NULL, oled_thread , NULL))
+    //     printf("Create oled_thread error!\n");
 
 	printf("ctrl + c to stop!\n"); 
 
@@ -361,14 +378,14 @@ int main(int argc, char *argv[])
         pthread_join(pthread_id[0],NULL);
         printf("thread_tft %ld exit!\n",pthread_id[0]);
 	}
-	if(pthread_id[1] != 0) {                   
-        pthread_join(pthread_id[1],NULL);
-        printf("pwm_thread %ld exit!\n",pthread_id[1]);
-	}
-	if(pthread_id[2] != 0) {                   
-        pthread_join(pthread_id[2],NULL);
-        printf("oled_thread %ld exit!\n",pthread_id[2]);
-	}
+	// if(pthread_id[1] != 0) {                   
+    //     pthread_join(pthread_id[1],NULL);
+    //     printf("pwm_thread %ld exit!\n",pthread_id[1]);
+	// }
+	// if(pthread_id[2] != 0) {                   
+    //     pthread_join(pthread_id[2],NULL);
+    //     printf("oled_thread %ld exit!\n",pthread_id[2]);
+	// }
 	
 	return 0;
 }

@@ -2,7 +2,7 @@
 #define __LCD_H
 
 /*****************************************************************************************
- * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 
  * 文件名  LCD.h
  * 描述    ：
  * 平台    ：linux
@@ -65,6 +65,7 @@ void LCD_Clear(uint16_t Color);
 void Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2);
 void LCD_WR_DATA8(char da); //发送数据-8位参数
 void LCD_Fast_WR_Color_DATA16(uint16_t Color ,uint32_t len);
+void LCD_Display_Dir(uint8_t dir);
 void LCD_WR_DATA(uint16_t da);
 void LCD_Fast_WR_DATA(uint8_t* Color ,uint32_t len);
 void LCD_Fast_WR_DATA16(uint16_t* Color ,uint32_t len);

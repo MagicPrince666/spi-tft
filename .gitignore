@@ -1,5 +1,9 @@
 SpiTft
 obj/*.o
 12864/
+bin/gbk*
+bin/SpiTft
+bin/test.*
+bin/lib*
 tp-adj
 .DS_Store

@@ -1,5 +1,5 @@
 /***************************************************************************************
- * 本程序只供学习使用，未经作者许可，不得用于其它任何用途 *
+ * 
  * 文件名  LCD.cpp
  * 描述    ：液晶驱动
  * 平台    ：linux
@@ -301,62 +301,59 @@ void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos)
 //9320/9325/9328/4531/4535/1505/b505/8989/5408/9341/5310/5510等IC已经实际测试	   	   
 void LCD_Scan_Dir(uint8_t dir)
 {
-	uint16_t regval=0;
-	uint16_t dirreg=0;
+	uint16_t regval = 0;
+	//uint16_t dirreg = 0X36;
 	uint16_t temp;  
 	switch(dir)
 	{
 		case L2R_U2D://从左到右,从上到下
-			regval|=(0<<7)|(0<<6)|(0<<5); 
+			regval|=(0<<7)|(0<<6)|(0<<5)|(1<<4); 
 			break;
 		case L2R_D2U://从左到右,从下到上
-			regval|=(1<<7)|(0<<6)|(0<<5); 
+			regval|=(1<<7)|(0<<6)|(0<<5)|(1<<4); 
 			break;
 		case R2L_U2D://从右到左,从上到下
-			regval|=(0<<7)|(1<<6)|(0<<5); 
+			regval|=(0<<7)|(1<<6)|(0<<5)|(1<<4); 
 			break;
 		case R2L_D2U://从右到左,从下到上
-			regval|=(1<<7)|(1<<6)|(0<<5); 
-			break;	 
+			regval|=(1<<7)|(1<<6)|(0<<5)|(1<<4); 
+			break;	
+
 		case U2D_L2R://从上到下,从左到右
-			regval|=(0<<7)|(0<<6)|(1<<5); 
+			regval|=(0<<7)|(0<<6)|(1<<5)|(0<<4); 
 			break;
 		case U2D_R2L://从上到下,从右到左
-			regval|=(0<<7)|(1<<6)|(1<<5); 
+			regval|=(0<<7)|(1<<6)|(1<<5)|(0<<4); 
 			break;
 		case D2U_L2R://从下到上,从左到右
-			regval|=(1<<7)|(0<<6)|(1<<5); 
+			regval|=(1<<7)|(0<<6)|(1<<5)|(0<<4); 
 			break;
 		case D2U_R2L://从下到上,从右到左
-			regval|=(1<<7)|(1<<6)|(1<<5); 
+			regval|=(1<<7)|(1<<6)|(1<<5)|(0<<4); 
 			break;	 
-			  
-		LCD_WR_REG_DATA(dirreg,regval);
- 		if((regval&0X20)||lcddev.dir==1)
-		{
-			if(lcddev.width<lcddev.height)//交换X,Y
-			{
-				temp=lcddev.width;
-				lcddev.width=lcddev.height;
-				lcddev.height=temp;
- 			}
-		}else  
-		{
-			if(lcddev.width>lcddev.height)//交换X,Y
-			{
-				temp=lcddev.width;
-				lcddev.width=lcddev.height;
-				lcddev.height=temp;
- 			}
-		}  
-
-		LCD_WR_REG(lcddev.setxcmd); 
-		LCD_WR_DATA(0);
-		LCD_WR_DATA(lcddev.width-1);
-		LCD_WR_REG(lcddev.setycmd); 
-		LCD_WR_DATA(0);
-		LCD_WR_DATA(lcddev.height-1);  
   	}
+	  
+	//LCD_WR_REG_DATA(0x36,regval|0x8);
+	LCD_WR_REG(0x36);    // Memory Access Control 
+	LCD_WR_DATA8(regval|0x8); 
+	
+	if((regval&0X20))//横屏
+	{
+		if(lcddev.width<lcddev.height)//交换X,Y
+		{
+			temp=lcddev.width;
+			lcddev.width=lcddev.height;
+			lcddev.height=temp;
+		}
+	}else  //竖屏
+	{
+		if(lcddev.width>lcddev.height)//交换X,Y
+		{
+			temp=lcddev.width;
+			lcddev.width=lcddev.height;
+			lcddev.height=temp;
+		}
+	}  
 }   
 
 //画点
@@ -415,7 +412,7 @@ void LCD_Display_Dir(uint8_t dir)
 		lcddev.setycmd=0X2B;  	 		
 		
 	} 
-	LCD_Scan_Dir(DFT_SCAN_DIR);	//默认扫描方向
+	LCD_Scan_Dir(dir);	//默认扫描方向
 }
 
 //设置窗口,并自动设置画点坐标到窗口左上角(sx,sy).
@@ -497,7 +494,7 @@ void Lcd_Init(void)
 	lcddev.wramcmd = 0X2C;
 	lcddev.setxcmd = 0X2A;
 	lcddev.setycmd = 0X2B;
-
+/*
 	LCD_WR_REG_DATA(0x00,0x0001);
 	usleep(50 * 1000);
 	lcddev.id = LCD_ReadReg(0x00);//SPI频死活读不了ID......
@@ -549,7 +546,7 @@ void Lcd_Init(void)
 			}
  		}  	
 	}
-
+*/
 	printf("LCD ID:0x%x\n",lcddev.id);
 	lcddev.id = 0X9341;
 	if(lcddev.id == 0x9341)
@@ -567,8 +564,8 @@ void Lcd_Init(void)
 
 		LCD_WR_REG(0xE8);  
 		LCD_WR_DATA8(0x85); 
-		LCD_WR_DATA8(0x00); 
-		LCD_WR_DATA8(0x78); 
+		LCD_WR_DATA8(0x10); 
+		LCD_WR_DATA8(0x7A); 
 
 		LCD_WR_REG(0xCB);  
 		LCD_WR_DATA8(0x39); 
@@ -585,17 +582,17 @@ void Lcd_Init(void)
 		LCD_WR_DATA8(0x00); 
 		
 		LCD_WR_REG(0xC0);    //Power control 
-		LCD_WR_DATA8(0x23);   //VRH[5:0] 
+		LCD_WR_DATA8(0x1B);   //VRH[5:0] 
 	
 		LCD_WR_REG(0xC1);    //Power control 
-		LCD_WR_DATA8(0x10);   //SAP[2:0];BT[3:0] 
+		LCD_WR_DATA8(0x01);   //SAP[2:0];BT[3:0] 
 	
 		LCD_WR_REG(0xC5);    //VCM control 
-		LCD_WR_DATA8(0x3e); //对比度调节
-		LCD_WR_DATA8(0x28); 
+		LCD_WR_DATA8(0x30); //对比度调节
+		LCD_WR_DATA8(0x30); 
 	
 		LCD_WR_REG(0xC7);    //VCM control2 
-		LCD_WR_DATA8(0x86);  //--
+		LCD_WR_DATA8(0xB7);  //--
 	
 		LCD_WR_REG(0x36);    // Memory Access Control 
 		LCD_WR_DATA8(0x48); //	   //48 68竖屏//28 E8 横屏
@@ -605,12 +602,12 @@ void Lcd_Init(void)
 
 		LCD_WR_REG(0xB1);    
 		LCD_WR_DATA8(0x00);  
-		LCD_WR_DATA8(0x18); 
+		LCD_WR_DATA8(0x1A); 
 	
 		LCD_WR_REG(0xB6);    // Display Function Control 
-		LCD_WR_DATA8(0x08); 
-		LCD_WR_DATA8(0x82);
-		LCD_WR_DATA8(0x27);  
+		LCD_WR_DATA8(0x0A); 
+		LCD_WR_DATA8(0xA2);
+		//LCD_WR_DATA8(0x27);  
 		
 		LCD_WR_REG(0xF2);    // 3Gamma Function Disable 
 		LCD_WR_DATA8(0x00); 
@@ -620,36 +617,36 @@ void Lcd_Init(void)
 	
 		LCD_WR_REG(0xE0);    //Set Gamma 
 		LCD_WR_DATA8(0x0F); 
-		LCD_WR_DATA8(0x31); 
-		LCD_WR_DATA8(0x2B); 
-		LCD_WR_DATA8(0x0C); 
+		LCD_WR_DATA8(0x2A); 
+		LCD_WR_DATA8(0x28); 
+		LCD_WR_DATA8(0x08); 
 		LCD_WR_DATA8(0x0E); 
 		LCD_WR_DATA8(0x08); 
-		LCD_WR_DATA8(0x4E); 
-		LCD_WR_DATA8(0xF1); 
-		LCD_WR_DATA8(0x37); 
-		LCD_WR_DATA8(0x07); 
-		LCD_WR_DATA8(0x10); 
-		LCD_WR_DATA8(0x03); 
-		LCD_WR_DATA8(0x0E); 
-		LCD_WR_DATA8(0x09); 
+		LCD_WR_DATA8(0x54); 
+		LCD_WR_DATA8(0xA9); 
+		LCD_WR_DATA8(0x43); 
+		LCD_WR_DATA8(0x0A); 
+		LCD_WR_DATA8(0x0F); 
+		LCD_WR_DATA8(0x00); 
+		LCD_WR_DATA8(0x00); 
+		LCD_WR_DATA8(0x00); 
 		LCD_WR_DATA8(0x00); 
 
 		LCD_WR_REG(0XE1);    //Set Gamma 
 		LCD_WR_DATA8(0x00); 
-		LCD_WR_DATA8(0x0E); 
-		LCD_WR_DATA8(0x14); 
-		LCD_WR_DATA8(0x03); 
-		LCD_WR_DATA8(0x11); 
+		LCD_WR_DATA8(0x15); 
+		LCD_WR_DATA8(0x17); 
 		LCD_WR_DATA8(0x07); 
-		LCD_WR_DATA8(0x31); 
-		LCD_WR_DATA8(0xC1); 
-		LCD_WR_DATA8(0x48); 
-		LCD_WR_DATA8(0x08); 
+		LCD_WR_DATA8(0x11); 
+		LCD_WR_DATA8(0x06); 
+		LCD_WR_DATA8(0x2B); 
+		LCD_WR_DATA8(0x56); 
+		LCD_WR_DATA8(0x3C); 
+		LCD_WR_DATA8(0x05); 
+		LCD_WR_DATA8(0x10); 
 		LCD_WR_DATA8(0x0F); 
-		LCD_WR_DATA8(0x0C); 
-		LCD_WR_DATA8(0x31); 
-		LCD_WR_DATA8(0x36); 
+		LCD_WR_DATA8(0x3F); 
+		LCD_WR_DATA8(0x3F); 
 		LCD_WR_DATA8(0x0F); 
 
 		LCD_WR_REG(0x2B); 
@@ -669,7 +666,7 @@ void Lcd_Init(void)
 		usleep(120 * 1000); 
 
 		LCD_WR_REG(0x29);    //Display on 
-		LCD_WR_REG(0x2c); 
+		//LCD_WR_REG(0x2c); 
 	}else if(lcddev.id != 0x9341)
 	{
 		
@@ -793,7 +790,8 @@ void Lcd_Init(void)
 		test_color();
 	}
 
-	LCD_Display_Dir(0);
+	LCD_Display_Dir(DFT_SCAN_DIR);
+	//LCD_Display_Dir(L2R_D2U);
 }
 
 //清屏函数
