@@ -464,11 +464,25 @@ void LCD_DisplayOn(void)
 {					   
 	LCD_WR_REG(0x29);
 }	 
+
 //LCD关闭显示
 void LCD_DisplayOff(void)
 {	   
 	LCD_WR_REG(0x28);
 }  
+
+//LCD背光控制
+//0 ～ 63
+void LCD_Backlight(uint8_t pwm)
+{	
+	LCD_WR_REG(0xBE);	
+	LCD_WR_DATA(0x05);	
+	LCD_WR_DATA(pwm);
+	//LCD_WR_DATA(0x01);
+	//LCD_WR_DATA(0xFF);	
+	//LCD_WR_DATA(0x00);	
+	//LCD_WR_DATA(0x00);	
+}	
 
 void LCD_delay(int t)
 {
@@ -665,8 +679,8 @@ void Lcd_Init(void)
 		usleep(120 * 1000); 
 
 		LCD_WR_REG(0x29);    //Display on 
-		//LCD_WR_REG(0x2c); 
-	}else if(lcddev.id != 0x9341)
+		LCD_WR_REG(0x2c); 
+	}else if(lcddev.id != 0x9325)
 	{
 		
 		LCD_WR_REG(0x01);
@@ -788,7 +802,7 @@ void Lcd_Init(void)
 		
 		test_color();
 	}
-
+	
 	LCD_Display_Dir(DFT_SCAN_DIR);
 }
 

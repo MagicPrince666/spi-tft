@@ -1,6 +1,7 @@
 SpiTft
 obj/*.o
 12864/
+yuv2rgb/
 bin/gbk*
 bin/SpiTft
 bin/test.*

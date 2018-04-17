@@ -203,6 +203,7 @@ void xianshi()//显示信息
 	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
 	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
 	LCD_Display_Dir(L2R_U2D);
+	LCD_Backlight(0x00);
 }
 void showqq()
 { 
@@ -286,6 +287,8 @@ void * thread_tft (void *arg)
 	printf("touch init\n");
 	showimage();
 
+	uint8_t i = 0;
+	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
 	while(run)
 	{							
 		if(jiance()) //检测触摸和按键
@@ -295,7 +298,11 @@ void * thread_tft (void *arg)
 		}
 	  	if(ref)
 		  	ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
-		usleep(1000);
+		usleep(100000);
+		i++;
+		if(i > 0x63) i = 0;
+		LCD_Backlight(i);
+		Show_Str(0,16+24+12,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
     }
 	close(gpio_mmap_fd);
 	SPI_Close();

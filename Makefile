@@ -3,8 +3,9 @@ CPP = $(CROSS_COMPILE)g++
 
 TARGET	= SpiTft
 
-DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./text ./GUI ./music
-INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture -I./mpu6050 -I./text -I./GUI -I./music
+DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./text ./GUI ./music ./video
+INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture \
+-I./mpu6050 -I./text -I./GUI -I./music -I./video
 CFLAGS	= -O3 -g -Wall
 LDFLAGS += -L./lib -lpthread -lm -lrt -ldl -liconv
 

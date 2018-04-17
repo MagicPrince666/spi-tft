@@ -66,6 +66,7 @@ void Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2
 void LCD_WR_DATA8(char da); //发送数据-8位参数
 void LCD_Fast_WR_Color_DATA16(uint16_t Color ,uint32_t len);
 void LCD_Display_Dir(uint8_t dir);
+void LCD_Backlight(uint8_t bl);
 void LCD_WR_DATA(uint16_t da);
 void LCD_Fast_WR_DATA(uint8_t* Color ,uint32_t len);
 void LCD_Fast_WR_DATA16(uint16_t* Color ,uint32_t len);
