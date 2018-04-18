@@ -59,3 +59,23 @@ void *  mpu_thread(void *arg)
 	close(fd_iic);
 	pthread_exit(NULL);
 }
+
+uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
+{
+	addr = addr<<1|0;
+	write(fd_iic, &addr, 1);
+	write(fd_iic, &reg, 1);
+	write(fd_iic, buf, len);
+	
+	return 0;
+} 
+
+uint8_t MPU_Read_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf)
+{ 
+	write(fd_iic, &reg, 1);
+	addr = addr<<1|1;
+	write(fd_iic, &addr, 1);
+	read(fd_iic, buf, len);
+	
+	return 0;
+}

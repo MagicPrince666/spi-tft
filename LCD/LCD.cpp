@@ -302,7 +302,6 @@ void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos)
 void LCD_Scan_Dir(uint8_t dir)
 {
 	uint16_t regval = 0;
-	//uint16_t dirreg = 0X36;
 	uint16_t temp;  
 	switch(dir)
 	{
@@ -391,7 +390,7 @@ void LCD_Fast_DrawPoint(uint16_t x,uint16_t y,uint16_t color)
 //dir:0,竖屏；1,横屏
 void LCD_Display_Dir(uint8_t dir)
 {
-	if(dir==0)			//竖屏
+	if(dir < 4)			//竖屏
 	{
 		lcddev.dir=0;	//竖屏
 		lcddev.width=240;
@@ -804,6 +803,7 @@ void Lcd_Init(void)
 	}
 	
 	LCD_Display_Dir(DFT_SCAN_DIR);
+	LCD_Clear(WHITE);
 }
 
 //清屏函数

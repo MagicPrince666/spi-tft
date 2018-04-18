@@ -198,18 +198,17 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
 
-	LCD_Display_Dir(D2U_L2R);
 	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
 	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
 	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
-	LCD_Display_Dir(L2R_U2D);
+	
 	LCD_Backlight(0x00);
 }
 void showqq()
 { 
 	uint16_t x,y; 
 	x=0;
-	y=120;
+	y=80;
 	while(y<lcddev.height-39)
 	{
 		x=0;
@@ -227,7 +226,8 @@ void showimage() //显示40*40图片
 	LCD_Clear(WHITE); //清屏  
 	showqq();
 	xianshi(); //显示信息 
-	ref = 0;				
+	ref = 0;		
+	//LCD_Display_Dir(L2R_U2D);		
 }
 
 static void sigint_handler(int sig)
@@ -243,24 +243,6 @@ void * thread_tft (void *arg)
 	gui_init();
 	//I2C_open();
 	
-
-	time_t timer;//time_t就是long int 类型
-	int times = 0;
-    timer = time(NULL);
-    printf("start time is: %ld\n", timer);
-
-	for(int i = 0 ; i < 5 ; i++)
-	{
-		LCD_Clear(RED);times++;
-		LCD_Clear(GREEN);times++;
-		LCD_Clear(BLUE);times++;
-		LCD_Clear(WHITE);times++; //刷屏测试
-	}
-
-	timer = time(NULL);
-    printf("end time is:   %ld\n", timer);
-	printf("times is: %d\n", times);
-
 	BACK_COLOR = WHITE;
 	POINT_COLOR = BLUE; 
 	
@@ -276,33 +258,51 @@ void * thread_tft (void *arg)
 	usleep(100*1000);
 	LCD_Clear(WHITE);
 
-	// printf("show git\n");
+	// printf("show gif\n");
 	// LCD_Display_Dir(D2U_L2R);//横屏显示
-	// ai_load_picfile((uint8_t*)"test.git",12,16,300,184,1,T_GIF);//显示当前目录bmp图片
+	// ai_load_picfile((uint8_t*)"test.gif",0,0,lcddev.width,lcddev.height,1,T_GIF);//显示当前目录bmp图片
 	// usleep(100*1000);
 	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
 	tp_dev.init();//触摸初始化
 	printf("touch init\n");
+	
+	LCD_Display_Dir(D2U_L2R);
+	time_t timer;//time_t就是long int 类型
+	int times = 0;
+    timer = time(NULL);
+    printf("start time is: %ld\n", timer);
+
+	for(int i = 0 ; i < 5 ; i++)
+	{
+		LCD_Clear(RED);times++;
+		LCD_Clear(GREEN);times++;
+		LCD_Clear(BLUE);times++;
+		LCD_Clear(WHITE);times++; //刷屏测试
+	}
+
+	timer = time(NULL);
+    printf("end time is:   %ld\n", timer);
+	
 	showimage();
 
-	uint8_t i = 0;
-	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
 	while(run)
 	{							
 		if(jiance()) //检测触摸和按键
 		{
+			LCD_Display_Dir(L2R_U2D);
 			ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+			LCD_Display_Dir(D2U_L2R);
 			//LCD_DrawRectangle(12,16,228,304);
 		}
 	  	if(ref)
+		  {
+			LCD_Display_Dir(L2R_U2D);
 		  	ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+			LCD_Display_Dir(D2U_L2R);
+		  }
 		usleep(100000);
-		i++;
-		if(i > 0x63) i = 0;
-		LCD_Backlight(i);
-		Show_Str(0,16+24+12,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
     }
 	close(gpio_mmap_fd);
 	SPI_Close();

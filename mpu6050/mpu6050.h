@@ -40,4 +40,15 @@ uint8_t MPU6050_Init();
 uint16_t GetData(unsigned char REG_Address);
 void *  mpu_thread(void *arg);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+uint8_t MPU_Write_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf);
+uint8_t MPU_Read_Len(uint8_t addr,uint8_t reg,uint8_t len,uint8_t *buf);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

@@ -126,9 +126,9 @@ uint16_t TP_Read_XOY(uint8_t xy)
 //返回值:0,失败;1,成功。
 uint8_t TP_Read_XY(uint16_t *x,uint16_t *y)
 {
-	uint16_t xtemp,ytemp;		
+	uint16_t xtemp,ytemp;	
 	xtemp=TP_Read_XOY(CMD_RDX);
-	ytemp=TP_Read_XOY(CMD_RDY);	  												   
+	ytemp=TP_Read_XOY(CMD_RDY);	 												   
 	//if(xtemp<100||ytemp<100)return 0;//读数失败
 	*x=xtemp;
 	*y=ytemp;
@@ -205,7 +205,15 @@ uint8_t TP_Scan(uint8_t tp)
 			tp_dev.sta=TP_PRES_DOWN|TP_CATH_PRES;
 			tp_dev.x[4]=tp_dev.x[0];
 			tp_dev.y[4]=tp_dev.y[0];  	   			 
-		}			   
+		}	
+		if(lcddev.dir)	//横屏
+		{
+			//tp_dev.sta |= 0x01;
+			uint16_t temp;
+			temp = tp_dev.y[0];
+			tp_dev.y[0] = tp_dev.x[0];
+			tp_dev.x[0] = lcddev.width - temp;
+		}	   
 	}else
 	{
 		if(tp_dev.sta&TP_PRES_DOWN)

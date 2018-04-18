@@ -69,8 +69,9 @@ uint8_t gif_readcolortbl(FILE *file,gif89a * gif,uint16_t num)
 //gif:gif信息;
 //返回值:0,OK;其他,失败;
 uint8_t gif_getinfo(FILE *file,gif89a * gif)
-{	   
-	fread((uint8_t*)&gif->gifLSD,1,7,file);
+{	
+	int ret = fread((uint8_t*)&gif->gifLSD,1,7,file);
+	if(ret != 7)return 1;
 	if(gif->gifLSD.flag&0x80)//存在全局颜色表
 	{
 		gif->numcolors=2<<(gif->gifLSD.flag&0x07);//得到颜色表大小
@@ -117,7 +118,6 @@ void gif_initlzw(gif89a* gif,uint8_t codesize)
 uint16_t gif_getdatablock(FILE *gfile,uint8_t *buf,uint16_t maxnum) 
 {
 	uint8_t cnt;
-//	uint32_t readed;
 	uint32_t fpos;
 	fread(&cnt,1,1,gfile);//得到LZW长度			 
 	if(cnt) 
@@ -147,8 +147,7 @@ uint16_t gif_getdatablock(FILE *gfile,uint8_t *buf,uint16_t maxnum)
 // 		 其他,失败
 uint8_t gif_readextension(FILE *gfile,gif89a* gif, int *pTransIndex,uint8_t *pDisposal)
 {
-	uint8_t temp;
-//	uint32_t readed;	 
+	uint8_t temp;	 
 	uint8_t buf[4];  
 	fread(&temp,1,1,gfile);//得到长度		 
 	switch(temp)
@@ -474,15 +473,10 @@ uint8_t gif_decode(const uint8_t *filename,uint16_t x,uint16_t y,uint16_t width,
 	uint16_t dtime=0;//解码延时
 	gif89a *mygif89a;
 	FILE *gfile;
-#if GIF_USE_MALLOC==1 	//定义是否使用malloc,这里我们选择使用malloc
 	mygif89a=(gif89a*)malloc(sizeof(gif89a));
 	if(mygif89a==NULL)res=PIC_MEM_ERR;//申请内存失败    
 	mygif89a->lzw=(LZW_INFO*)malloc(sizeof(LZW_INFO));
 	if(mygif89a->lzw==NULL)res=PIC_MEM_ERR;//申请内存失败 
-#else
-	mygif89a=&tgif89a;
-	mygif89a->lzw=&tlzw;
-#endif
 
 	if(res==0)//OK
 	{
@@ -515,10 +509,9 @@ uint8_t gif_decode(const uint8_t *filename,uint16_t x,uint16_t y,uint16_t width,
 		}
 		fclose(gfile);
 	}   
-#if GIF_USE_MALLOC==1 	//定义是否使用malloc,这里我们选择使用malloc
+	
 	free(mygif89a->lzw);
 	free(mygif89a); 
-#endif 
 	return res;
 }
 
