@@ -998,7 +998,7 @@ void LCD_ShowChar(uint16_t x,uint16_t y,uint8_t num,uint8_t size,uint8_t mode)
 			}  	 
 	    }     
 	}
-	LCD_Color_Fill(x,y,x+xwidth-1,y+size-1,SPI_LCD_RAM);
+	LCD_Color_Fill(x-size/2,y0,x+xwidth-1,y0+size-1,SPI_LCD_RAM);
 	//LCD_Fast_WR_DATA16(SPI_LCD_RAM,size*xwidth);
 	POINT_COLOR=colortemp;	    	   	 	  
 } 

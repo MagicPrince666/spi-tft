@@ -265,7 +265,7 @@ void * thread_tft (void *arg)
 	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
-	tp_dev.init();//触摸初始化
+	//tp_dev.init();//触摸初始化
 	printf("touch init\n");
 	
 	LCD_Display_Dir(D2U_L2R);
