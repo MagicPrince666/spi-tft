@@ -21,7 +21,7 @@
 <br>
 <br>码农不易 尊重劳动
 <br>作者：小王子与木头人
-<br>功能：uvc录制H264
+<br>功能：linux驱动 spi TFT触摸屏
 <br>QQ：846863428 
 <br>TEL: 15220187476 
 <br>mail: huangliquanprince@icloud.com 
