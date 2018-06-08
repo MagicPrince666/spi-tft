@@ -940,6 +940,7 @@ void LCD_Draw_Circle(uint16_t x0,uint16_t y0,uint8_t r)
 void LCD_ShowChar(uint16_t x,uint16_t y,uint8_t num,uint8_t size,uint8_t mode)
 {  							  
     uint8_t temp = 0,t1,t,xwidth;
+	uint16_t x0=x;
 	uint16_t y0=y;
 	uint16_t colortemp=POINT_COLOR;   
 	xwidth = size/2;   			     
@@ -998,7 +999,7 @@ void LCD_ShowChar(uint16_t x,uint16_t y,uint8_t num,uint8_t size,uint8_t mode)
 			}  	 
 	    }     
 	}
-	LCD_Color_Fill(x-size/2,y0,x+xwidth-1,y0+size-1,SPI_LCD_RAM);
+	LCD_Color_Fill(x0,y0,x0+xwidth-1,y0+size-1,SPI_LCD_RAM);
 	//LCD_Fast_WR_DATA16(SPI_LCD_RAM,size*xwidth);
 	POINT_COLOR=colortemp;	    	   	 	  
 } 
