@@ -198,9 +198,10 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
 
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",24,0x00);
-	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",16,0x00);
-	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人",12,0x00);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"家用路由器嵌入式图形界面",24,0x00);
+	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人与木头人与小王子",16,0x00);
+	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"设计者：小王子与木头人",12,0x00);
+	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer:Magic Prince");
 	
 	LCD_Backlight(0x00);
 }
@@ -284,6 +285,8 @@ void * thread_tft (void *arg)
 
 	timer = time(NULL);
     printf("end time is:   %ld\n", timer);
+
+	printf("Did you see that? demo!!\n");
 	
 	showimage();
 
