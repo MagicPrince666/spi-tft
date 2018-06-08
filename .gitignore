@@ -1,4 +1,5 @@
-SpiTft
+spi-tft
+simple-spitft
 obj/*.o
 12864/
 yuv2rgb/

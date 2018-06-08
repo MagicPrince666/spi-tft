@@ -2,7 +2,7 @@ CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
 CPP = $(CROSS_COMPILE)g++
 CC  = $(CROSS_COMPILE)gcc
 
-TARGET	= SpiTft
+TARGET	= spi-tft
 
 DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./mpu6050/eMPL ./text ./GUI ./music ./video
 INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture \

@@ -18,7 +18,8 @@
 <br> 另外还外接一个按键
 <br> IO39 ---- key
 
-<br> 为照顾初学者，创建simple分支，后续把精简化的代码加入simple分支，去出中文，去除图片等功能
+<br> 为照顾初学者，创建simple分支，精简化的代码加入simple分支，去出中文，去除图片等功能
+<br> 只留下基本的显示和触摸功能，如果不需要触摸功能，可以在代码里面去掉
 
 <br>
 <br>码农不易 尊重劳动
@@ -26,5 +27,5 @@
 <br>功能：linux驱动 spi TFT触摸屏
 <br>QQ：846863428 
 <br>TEL: 15220187476 
-<br>mail: huangliquanprince@icloud.com 
+<br>email: huangliquanprince@icloud.com 
 <br>修改时间 ：2018-05-17
