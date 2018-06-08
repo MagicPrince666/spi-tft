@@ -17,14 +17,9 @@
 #include "LCD.h"
 #include "font.h"
 #include "touch.h"
-#include "pwmconfig.h"
 #include "key.h"
-#include "piclib.h"
+//#include "piclib.h"
 #include "spi.h"
-#include "iic.h"
-#include "mpu6050.h"
-#include "text.h"
-#include "guix.h"
 
 uint8_t ref = 0;//刷新显示
 
@@ -37,7 +32,7 @@ void my_quit()
 	//close(gpio_mmap_fd);
 	//SPI_Close();
 	//I2C_close();
-	gifdecoding = 0;
+	//gifdecoding = 0;
 	run = 0;
 }
 //清空屏幕并在右上角显示"RST"
@@ -47,6 +42,43 @@ void Load_Drow_Dialog(void)
  	POINT_COLOR=BLUE;//设置字体为蓝色 
 	LCD_ShowString(lcddev.width-32,0,200,16,16,(char *)"RST");//显示清屏区域
   	POINT_COLOR=RED;//设置画笔蓝色 
+}
+//电容触摸屏专有部分
+//画水平线
+//x0,y0:坐标
+//len:线长度
+//color:颜色
+void gui_draw_hline(uint16_t x0,uint16_t y0,uint16_t len,uint16_t color)
+{
+	if(len==0)return;
+	LCD_Fill(x0,y0,x0+len-1,y0,color);	
+}
+//画实心圆
+//x0,y0:坐标
+//r:半径
+//color:颜色
+void gui_fill_circle(uint16_t x0,uint16_t y0,uint16_t r,uint16_t color)
+{											  
+	uint32_t i;
+	uint32_t imax = ((uint32_t)r*707)/1000+1;
+	uint32_t sqmax = (uint32_t)r*(uint32_t)r+(uint32_t)r/2;
+	uint32_t x=r;
+	gui_draw_hline(x0-r,y0,2*r,color);
+	for (i=1;i<=imax;i++) 
+	{
+		if ((i*i+x*x)>sqmax)// draw lines from outside  
+		{
+ 			if (x>imax) 
+			{
+				gui_draw_hline (x0-i+1,y0+x,2*(i-1),color);
+				gui_draw_hline (x0-i+1,y0-x,2*(i-1),color);
+			}
+			x--;
+		}
+		// draw lines from inside (center)  
+		gui_draw_hline(x0-x,y0+i,2*x,color);
+		gui_draw_hline(x0-x,y0-i,2*x,color);
+	}
 }
 
 //两个数之差的绝对值 
@@ -161,31 +193,9 @@ uint8_t jiance() //检测触摸和按键
 		
 	if(KEY_1 == 0)	//如果按键1按下,进入校准程序 
 	{		
-		//LCD_ReadPoint(120,160);//读取不了点数据		
-		
-		// LCD_Clear(WHITE); //清屏  
-		//Show_Str(60,0,lcddev.width,lcddev.height,(uint8_t*)"小王子与木头人",16,0x00);
 		usleep(20*1000);
-		LCD_ShowString(20,15,lcddev.width,lcddev.height,16,(char *)"Test mpu6050");
 		while(!KEY_1)
-		{
-			LCD_ShowString(10,55,lcddev.width,lcddev.height,16,(char *)"ACCE_X:");
-			LCD_ShowNum(10 + 16*7,55,GetData(ACCEL_XOUT_H),5,16);
-
-			LCD_ShowString(10,55 + 20*1,lcddev.width,lcddev.height,16,(char *)"ACCE_Y:");
-			LCD_ShowNum(10 + 16*7,55 + 20*1,GetData(ACCEL_YOUT_H),5,16);
-
-			LCD_ShowString(10,55 + 20*2,lcddev.width,lcddev.height,16,(char *)"ACCE_Z:");
-			LCD_ShowNum(10 + 16*7,55 + 20*2,GetData(ACCEL_ZOUT_H),5,16);
-
-			LCD_ShowString(10,55 + 20*3,lcddev.width,lcddev.height,16,(char *)"GYRO_X:");
-			LCD_ShowNum(10 + 16*7,55 + 20*3,GetData(GYRO_XOUT_H),5,16);
-
-			LCD_ShowString(10,55 + 20*4,lcddev.width,lcddev.height,16,(char *)"GYRO_Y:");
-			LCD_ShowNum(10 + 16*7,55 + 20*4,GetData(GYRO_YOUT_H),5,16);
-
-			LCD_ShowString(10,55 + 20*5,lcddev.width,lcddev.height,16,(char *)"GYRO_Z:");
-			LCD_ShowNum(10 + 16*7,55 + 20*5,GetData(GYRO_ZOUT_H),5,16);	
+		{	
 		}
 			
 		return 1;
@@ -197,11 +207,8 @@ void xianshi()//显示信息
 {   
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
-
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"家用路由器嵌入式图形界面",24,0x00);
-	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人与木头人与小王子",16,0x00);
-	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"设计者：小王子与木头人",12,0x00);
-	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer:Magic Prince");
+	LCD_ShowString(0,20,lcddev.width,lcddev.height,16,(char *)"https://github.com/MagicPrince666/spi-tft.git");
+	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer:me ! is me!");
 	
 	LCD_Backlight(0x00);
 }
@@ -241,23 +248,22 @@ void * thread_tft (void *arg)
 {
 	Lcd_Init();   //tft初始化
 	Init_Key();
-	gui_init();
-	//I2C_open();
+	//gui_init();
 	
 	BACK_COLOR = WHITE;
 	POINT_COLOR = BLUE; 
 	
-	piclib_init();				//piclib初始化	
-	printf("Init piclib\n");
+	// piclib_init();				//piclib初始化	
+	// printf("Init piclib\n");
 
-	printf("show jpg\n");
-	ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
-	usleep(100*1000);
-	LCD_Clear(WHITE);
-	printf("show bmp\n");
-	ai_load_picfile((uint8_t*)"test.bmp",12,16,228,304,1,T_BMP);//显示当前目录bmp图片
-	usleep(100*1000);
-	LCD_Clear(WHITE);
+	// printf("show jpg\n");
+	// ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
+	// usleep(100*1000);
+	// LCD_Clear(WHITE);
+	// printf("show bmp\n");
+	// ai_load_picfile((uint8_t*)"test.bmp",12,16,228,304,1,T_BMP);//显示当前目录bmp图片
+	// usleep(100*1000);
+	// LCD_Clear(WHITE);
 
 	// printf("show gif\n");
 	// LCD_Display_Dir(D2U_L2R);//横屏显示
@@ -295,14 +301,14 @@ void * thread_tft (void *arg)
 		if(jiance()) //检测触摸和按键
 		{
 			LCD_Display_Dir(L2R_U2D);
-			ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+			//ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
 			LCD_Display_Dir(D2U_L2R);
 			//LCD_DrawRectangle(12,16,228,304);
 		}
 	  	if(ref)
 		  {
 			LCD_Display_Dir(L2R_U2D);
-		  	ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
+		  	//ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
 			LCD_Display_Dir(D2U_L2R);
 		  }
 		usleep(100000);
@@ -312,51 +318,6 @@ void * thread_tft (void *arg)
 	pthread_exit(NULL);
 }
 
-void * pwm_thread (void *arg)
-{
-	pwm_init();
-	int MyPeriod = 20000000; //period 设置 1s
-    int MyDuty =   1000000;
-	bool flag=false;
-
-	printf("init pwm\n");
-
-	while(run)
-	{
-		if(flag == false)
-			MyDuty +=   10000;
-		else MyDuty -=   10000;
-		
-		if(MyDuty >= 2000000)	
-			flag = true;
-		if(MyDuty <= 1000000)	
-			flag = false;
-
-		if(pwm_config(4, MyPeriod, MyDuty) < 0)break;
-
-		sleep(1);
-	}
-	printf("exit pwm thread\n");
-	pwm_disable(1);
-	pwm_disable(2);
-	pwm_disable(3);
-	pwm_disable(4);
-	pthread_exit(NULL);
-}
-
-void * oled_thread (void *arg)
-{
-	I2C_open();
-	//MPU6050_Init();
-	while(run)
-	{
-		sleep(1);
-	}
-
-	printf("exit oled thread\n");
-	I2C_close();
-	pthread_exit(NULL);
-}
 
 pthread_mutex_t mut;//声明互斥变量 
 

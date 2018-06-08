@@ -13,7 +13,7 @@
 #include "font.h"
 #include "LCD.h"
 #include "spi.h"
-#include "pwmconfig.h"
+//#include "pwmconfig.h"
 #include "touch.h"
 
 #define SPI

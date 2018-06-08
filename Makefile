@@ -2,13 +2,12 @@ CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
 CPP = $(CROSS_COMPILE)g++
 CC  = $(CROSS_COMPILE)gcc
 
-TARGET	= SpiTft
+TARGET	= simple-spitft
 
-DIR		= . ./font ./LCD ./sys ./touch ./pwm ./spi ./iic ./key ./picture ./mpu6050 ./mpu6050/eMPL ./text ./GUI ./music ./video
-INC		= -I./font -I./LCD -I./sys -I./touch -I./pwm -I./spi -I./iic -I./key -I./picture \
--I./mpu6050 -I./mpu6050/eMPL -I./text -I./GUI -I./music -I./video
+DIR		= . ./font ./LCD ./sys ./touch ./spi ./key ./iic
+INC		= -I./font -I./LCD -I./sys -I./touch -I./spi -I./iic -I./iic -I./key
 CFLAGS	= -O3 -g -Wall# -std=gnu++11 
-LDFLAGS += -L./lib -lpthread -lm -lrt -ldl -liconv
+LDFLAGS += -lpthread -lm -lrt -ldl
 
 OBJPATH	= ./obj
 INSTALLPATH	= ./bin
@@ -31,8 +30,7 @@ $(TARGET):$(OBJPATH)
 	$(CPP) -o $@ $(OBJPATH)/*.o $(LDFLAGS) 
 
 install:
-	cp -r $(TARGET) gbk* test.* lib/libiconv.so $(INSTALLPATH) 
-	mv  $(INSTALLPATH)/libiconv.so $(INSTALLPATH)/libiconv.so.2
+	cp -r $(TARGET) $(INSTALLPATH) 
 
 clean:
 	-rm -f $(OBJPATH)/*.o

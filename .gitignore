@@ -1,4 +1,5 @@
 SpiTft
+simple-spitft
 obj/*.o
 12864/
 yuv2rgb/
