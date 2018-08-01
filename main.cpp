@@ -8,6 +8,7 @@
  * 修改时间  ：2017-09-19
  * 修复找不到图片文件会发生段错误的bug
  * 增加外部字库文件 以显示中文汉字
+ * 修复第一个字符位置不对的bug
 *****************************************************************************************/
 
 #include <stdio.h>
@@ -196,7 +197,7 @@ uint8_t jiance() //检测触摸和按键
 void xianshi()//显示信息
 {   
 	BACK_COLOR = WHITE;
-	POINT_COLOR = RED;	
+	POINT_COLOR = BLUE;	
 
 	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"家用路由器嵌入式图形界面",24,0x00);
 	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人与木头人与小王子",16,0x00);
