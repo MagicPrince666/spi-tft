@@ -30,4 +30,5 @@
 <br>email: huangliquanprince@icloud.com 
 <br>修改时间 ：2018-05-17
 <br>觉得不错给鼓励一下
-<br>![alipay](https://github.com/MagicPrince666/spi-tft/raw/master/picture/alipay.jpg)
+<br>
+[![alipay](https://github.com/MagicPrince666/spi-tft/raw/master/picture/alipay.jpg)](https://www.paypal.me/openxboot/10)
