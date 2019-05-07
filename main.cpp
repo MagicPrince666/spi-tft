@@ -159,7 +159,7 @@ uint8_t jiance() //检测触摸和按键
 		Load_Drow_Dialog();
 		rtp_test();
 	}
-		
+	/*	
 	if(KEY_1 == 0)	//如果按键1按下,进入校准程序 
 	{		
 		//LCD_ReadPoint(120,160);//读取不了点数据		
@@ -191,7 +191,7 @@ uint8_t jiance() //检测触摸和按键
 			
 		return 1;
 	}
-	 
+	 */
 	return 0;
 }
 void xianshi()//显示信息
@@ -199,10 +199,10 @@ void xianshi()//显示信息
 	BACK_COLOR = WHITE;
 	POINT_COLOR = BLUE;	
 
-	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"家用路由器嵌入式图形界面",24,0x00);
+	Show_Str(0,0,lcddev.width,lcddev.height,(const uint8_t *)"路由器嵌入式图形界面",24,0x00);
 	Show_Str(0,24,lcddev.width,lcddev.height,(const uint8_t *)"小王子与木头人与木头人与小王子",16,0x00);
 	Show_Str(0,16+24,lcddev.width,lcddev.height,(const uint8_t *)"设计者：小王子与木头人",12,0x00);
-	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer: yes! is me.");
+	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer: is me.");
 	
 	LCD_Backlight(0x00);
 }
@@ -240,6 +240,8 @@ static void sigint_handler(int sig)
 
 void * thread_tft (void *arg) 
 {
+	//pwm_init();
+	//pwm_config(1, 20000000, 1000000);
 	Lcd_Init();   //tft初始化
 	Init_Key();
 	gui_init();
@@ -267,8 +269,7 @@ void * thread_tft (void *arg)
 	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
-	tp_dev.init();//触摸初始化
-	printf("touch init\n");
+	
 	
 	LCD_Display_Dir(D2U_L2R);
 	time_t timer;//time_t就是long int 类型
@@ -290,6 +291,9 @@ void * thread_tft (void *arg)
 	printf("Did you see that? demo!!\n");
 	
 	showimage();
+
+	tp_dev.init();//触摸初始化
+	printf("touch init\n");
 
 	while(run)
 	{							
@@ -366,7 +370,7 @@ int main(int argc, char *argv[])
 	pthread_t pthread_id[3];//线程ID
     pthread_mutex_init(&mut,NULL);
 
-	signal(SIGINT, sigint_handler);//信号处理
+	//signal(SIGINT, sigint_handler);//信号处理
 
 	if (pthread_create(&pthread_id[0], NULL, thread_tft , NULL))
         printf("Create thread_tft error!\n");

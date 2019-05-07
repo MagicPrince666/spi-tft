@@ -4,6 +4,15 @@
 #include "stdlib.h"
 #include "math.h"
 #include "sys.h"
+#include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <getopt.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
 
 
 _m_tp_dev tp_dev=
@@ -25,7 +34,7 @@ _m_tp_dev tp_dev=
 uint8_t CMD_RDX=0XD0;
 uint8_t CMD_RDY=0X90;
  	 			    					   
-//#define SPI_Control
+#define SPI_Control
 
 
 #ifndef SPI_Control	 			    					   
@@ -45,6 +54,94 @@ void TP_Write_Byte(uint8_t num)
 		TCLK_1;		//上升沿有效	        
 	}		 			    
 }
+#endif
+
+#ifdef SPI_Control
+static const char *device = "/dev/spidev32766.2";
+static uint8_t mode = 0; /* SPI通信使用全双工，设置CPOL＝0，CPHA＝0。 */
+static uint8_t bits = 8; /* 8ｂiｔｓ读写，MSB first。*/
+static uint32_t speed = 4 * 1000 * 1000;/* 设置96M传输速度 */
+static int t_SPI_Fd = -1; 
+
+static void pabort(const char *s)
+{
+    perror(s);
+    abort();
+}
+
+int T_SPI_Open(void)
+{
+    int fd;
+    int ret = 0;
+
+    fd = open(device, O_RDWR);
+    if (fd < 0)
+        pabort("can't open device");
+    else
+        printf("SPI2 %s - Open Succeed. Start Init SPI...\n",device);
+
+
+    t_SPI_Fd = fd;
+    /*
+    * spi mode
+    */
+    ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
+    if (ret == -1)
+        pabort("can't set spi2 mode");
+
+
+    ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
+    if (ret == -1)
+        pabort("can't get spi2 mode");
+
+
+    /*
+    * bits per word
+    */
+    ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+    if (ret == -1)
+        pabort("can't set bits per word");
+
+
+    ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+    if (ret == -1)
+        pabort("can't get bits per word");
+
+
+    /*
+    * max speed hz
+    */
+    ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+    if (ret == -1)
+        pabort("can't set max speed hz");
+
+
+    ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+    if (ret == -1)
+        pabort("can't get max speed hz");
+
+
+    printf("spi2 mode: %d\n", mode);
+    printf("bits per word: %d\n", bits);
+    printf("max speed: %d KHz (%d MHz)\n", speed / 1000, speed / 1000 / 1000);
+
+
+    return ret;
+}
+
+
+/**
+* 功 能：关闭SPI模块
+*/
+int T_SPI_Close(void)
+{
+    if (t_SPI_Fd == 0) /* SPI是否已经打开*/
+    return 0;
+    close(t_SPI_Fd);
+
+    return 0;
+}
+
 #endif
 //SPI读数据 
 //从触摸屏IC读取adc值
@@ -77,14 +174,16 @@ uint16_t TP_Read_AD(uint8_t CMD)
 	TCS_1;		//释放片选	
 
 #else	  
-	uint16_t Num=0;  	 
-	TCS_0; 		//选中触摸屏IC
-	SPI2_ReadWriteByte(CMD);//发送命令字
+	uint16_t Num=0;
+	char str[2];
+	  	 
+
+	write(t_SPI_Fd, &CMD, 1);
 	usleep(6);//ADS7846的转换时间最长为6us	
-  	Num=SPI2_ReadWriteByte(0)<<8;
-  	Num|=SPI2_ReadWriteByte(0); 	
-	Num>>=4;   	//只有高12位有效.
-	TCS_1;		//释放片选	 
+	read(t_SPI_Fd, str, 2);
+	Num = str[0]<<8 | str[1] >> 4;   	//只有高12位有效.
+	//printf("Num=%d\n",Num);
+
 #endif
 
 	return(Num);   
@@ -560,16 +659,21 @@ uint8_t TP_Init(void)
 	// 	return 0;
 	// }else
 	{
-		mt76x8_gpio_set_pin_direction(14, 1);
-		mt76x8_gpio_set_pin_direction(15, 1);
+		//mt76x8_gpio_set_pin_direction(14, 1);
+		//mt76x8_gpio_set_pin_direction(15, 1);
 		mt76x8_gpio_set_pin_direction(16, 0);
-		mt76x8_gpio_set_pin_direction(17, 1);
-		mt76x8_gpio_set_pin_direction(41, 0);
-		mt76x8_gpio_set_pin_value(41, 1);
+		//mt76x8_gpio_set_pin_direction(17, 1);
+		//mt76x8_gpio_set_pin_direction(41, 0);
+		//mt76x8_gpio_set_pin_value(41, 1);
+		//mt76x8_gpio_set_pin_value(16, 1);
 		
-		TCS_1;
-		TDIN_1;
-		TCLK_1;
+		//TCS_1;
+		//TDIN_1;
+		//TCLK_1;
+#ifdef SPI_Control
+		printf("init spi2\n");
+		T_SPI_Open();
+#endif
 		
 		TP_Read_XY(&tp_dev.x[0],&tp_dev.y[0]);//第一次读取初始化	 
 		if(TP_Get_Adjdata())return 0;//已经校准

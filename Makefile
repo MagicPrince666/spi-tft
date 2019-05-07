@@ -1,4 +1,4 @@
-CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
+CROSS_COMPILE = /Volumes/Magic/openwrt_widora/staging_dir/toolchain-mipsel_24kec+dsp_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mipsel-openwrt-linux-uclibc-
 CPP = $(CROSS_COMPILE)g++
 CC  = $(CROSS_COMPILE)gcc
 

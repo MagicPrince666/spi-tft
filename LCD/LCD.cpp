@@ -16,6 +16,19 @@
 #include "pwmconfig.h"
 #include "touch.h"
 
+void RGBToYUV(int Red, int Green, int Blue, int* Y,int* U,int* V)
+{
+	*Y = ((Red << 6) + (Red << 3) + (Red << 2) + Red + (Green << 7) + (Green << 4) + (Green << 2) + (Green << 1) + (Blue << 4) + (Blue << 3) + (Blue << 2) + Blue) >> 8;
+	*U = (-((Red << 5) + (Red << 2) + (Red << 1)) - ((Green << 6) + (Green << 3) + (Green << 1)) + ((Blue << 6) + (Blue << 5) + (Blue << 4))) >> 8;
+	*V = ((Red << 7) + (Red << 4) + (Red << 3) + (Red << 2) + (Red << 1) - ((Green << 7) + (Green << 2)) - ((Blue << 4) + (Blue << 3) + (Blue << 1))) >> 8;
+}
+void YUVToRGB(int Y, int U, int V, int* Red, int* Green, int* Blue)
+{
+	*Red   = ((Y << 8) + ((V << 8) + (V << 5) + (V << 2))) >> 8;
+	*Green = ((Y << 8) - ((U << 6) + (U << 5) + (U << 2)) - ((V << 7) + (V << 4) + (V << 2) + V)) >> 8;  
+	*Blue = ((Y << 8) + (U << 9) + (U << 3)) >> 8;
+}
+
 #define SPI
 
 uint16_t SPI_LCD_RAM[320*480];//显示缓存
@@ -495,6 +508,8 @@ void Lcd_Init(void)
 		printf("error\n");
 
 	mt76x8_gpio_set_pin_direction(11, 1);
+	mt76x8_gpio_set_pin_direction(15, 1);
+	LCD_BL_1;
 
 	SPI_Open();//硬件SPI初始化
 	

@@ -124,7 +124,7 @@ int SPI_Open(void)
     if (fd < 0)
         pabort("can't open device");
     else
-        printf("SPI - Open Succeed. Start Init SPI...\n");
+        printf("SPI %s - Open Succeed. Start Init SPI...\n",device);
 
 
     g_SPI_Fd = fd;

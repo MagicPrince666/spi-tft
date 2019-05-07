@@ -34,6 +34,8 @@ extern _lcd_dev lcddev;	//管理LCD重要参数
 
 #define LCD_DC_1 mt76x8_gpio_set_pin_value(11, 1)
 #define LCD_DC_0 mt76x8_gpio_set_pin_value(11, 0)
+#define LCD_BL_1 mt76x8_gpio_set_pin_value(15, 1)
+#define LCD_BL_0 mt76x8_gpio_set_pin_value(15, 0)
 
 //扫描方向定义
 #define L2R_U2D  0 //从左到右,从上到下
@@ -58,7 +60,8 @@ extern  uint16_t BACK_COLOR, POINT_COLOR;   //背景色，画笔色
 #define LCD_DIS_INVERSION 0x21  //反显
 #define LCD_MEM_ACCESS 0x36  //存储访问控制
 
-
+void RGBToYUV(int Red, int Green, int Blue, int* Y,int* U,int* V);
+void YUVToRGB(int Y, int U, int V, int* Red, int* Green, int* Blue);
 //LCD地址结构体
 void Lcd_Init(void); 
 void LCD_Clear(uint16_t Color);
