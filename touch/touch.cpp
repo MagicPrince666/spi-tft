@@ -8,12 +8,16 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+
+#define SPI_Control
+
+#ifdef SPI_Control
 #include <getopt.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
-
+#endif
 
 _m_tp_dev tp_dev=
 {
@@ -34,7 +38,7 @@ _m_tp_dev tp_dev=
 uint8_t CMD_RDX=0XD0;
 uint8_t CMD_RDY=0X90;
  	 			    					   
-#define SPI_Control
+
 
 
 #ifndef SPI_Control	 			    					   
@@ -58,9 +62,9 @@ void TP_Write_Byte(uint8_t num)
 
 #ifdef SPI_Control
 static const char *device = "/dev/spidev32766.2";
-static uint8_t mode = 0; /* SPI通信使用全双工，设置CPOL＝0，CPHA＝0。 */
+static uint8_t mode = 3; /* SPI通信使用全双工，设置CPOL＝0，CPHA＝0。 */
 static uint8_t bits = 8; /* 8ｂiｔｓ读写，MSB first。*/
-static uint32_t speed = 4 * 1000 * 1000;/* 设置96M传输速度 */
+static uint32_t speed = 2 * 1000 * 1000;/* 设置96M传输速度 */
 static int t_SPI_Fd = -1; 
 
 static void pabort(const char *s)
@@ -174,15 +178,14 @@ uint16_t TP_Read_AD(uint8_t CMD)
 	TCS_1;		//释放片选	
 
 #else	  
-	uint16_t Num=0;
-	char str[2];
+	uint16_t Num;
+	uint8_t str[2];
 	  	 
-
 	write(t_SPI_Fd, &CMD, 1);
 	usleep(6);//ADS7846的转换时间最长为6us	
 	read(t_SPI_Fd, str, 2);
-	Num = str[0]<<8 | str[1] >> 4;   	//只有高12位有效.
-	//printf("Num=%d\n",Num);
+	Num = (str[0]<<8 | str[1]) >> 4;   	//只有高12位有效.
+	printf("%d %d\n",str[0],str[1]);
 
 #endif
 
@@ -659,20 +662,23 @@ uint8_t TP_Init(void)
 	// 	return 0;
 	// }else
 	{
-		//mt76x8_gpio_set_pin_direction(14, 1);
-		//mt76x8_gpio_set_pin_direction(15, 1);
-		mt76x8_gpio_set_pin_direction(16, 0);
-		//mt76x8_gpio_set_pin_direction(17, 1);
-		//mt76x8_gpio_set_pin_direction(41, 0);
-		//mt76x8_gpio_set_pin_value(41, 1);
-		//mt76x8_gpio_set_pin_value(16, 1);
 		
-		//TCS_1;
-		//TDIN_1;
-		//TCLK_1;
 #ifdef SPI_Control
+		mt76x8_gpio_set_pin_value(16, 1);
+		mt76x8_gpio_set_pin_direction(16, 0);
 		printf("init spi2\n");
 		T_SPI_Open();
+#else
+		mt76x8_gpio_set_pin_direction(14, 1);
+		mt76x8_gpio_set_pin_direction(15, 1);
+		mt76x8_gpio_set_pin_direction(16, 0);
+		mt76x8_gpio_set_pin_direction(17, 1);
+		mt76x8_gpio_set_pin_direction(41, 0);
+		mt76x8_gpio_set_pin_value(41, 1);
+		
+		TCS_1;
+		TDIN_1;
+		TCLK_1;
 #endif
 		
 		TP_Read_XY(&tp_dev.x[0],&tp_dev.y[0]);//第一次读取初始化	 

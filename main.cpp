@@ -243,7 +243,7 @@ void * thread_tft (void *arg)
 	//pwm_init();
 	//pwm_config(1, 20000000, 1000000);
 	Lcd_Init();   //tft初始化
-	Init_Key();
+	//Init_Key();
 	gui_init();
 	//I2C_open();
 	
@@ -269,8 +269,6 @@ void * thread_tft (void *arg)
 	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
-	
-	
 	LCD_Display_Dir(D2U_L2R);
 	time_t timer;//time_t就是long int 类型
 	int times = 0;
@@ -289,11 +287,11 @@ void * thread_tft (void *arg)
     printf("end time is:   %ld\n", timer);
 
 	printf("Did you see that? demo!!\n");
-	
-	showimage();
 
 	tp_dev.init();//触摸初始化
 	printf("touch init\n");
+	
+	showimage();	
 
 	while(run)
 	{							
