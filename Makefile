@@ -1,11 +1,11 @@
-CROSS_COMPILE = mipsel-openwrt-linux-uclibc-
+CROSS_COMPILE = aarch64-imx8mm-linux-gnu-
 CPP = $(CROSS_COMPILE)g++
 CC  = $(CROSS_COMPILE)gcc
 
 TARGET	= simple-spitft
 
-DIR		= . ./font ./LCD ./sys ./touch ./spi ./key ./iic
-INC		= -I./font -I./LCD -I./sys -I./touch -I./spi -I./iic -I./iic -I./key
+DIR		= . ./font ./LCD ./sys ./spi ./key ./iic #./touch
+INC		= -I./font -I./LCD -I./sys -I./spi -I./iic -I./iic -I./key #-I./touch
 CFLAGS	= -O3 -g -Wall# -std=gnu++11 
 LDFLAGS += -lpthread -lm -lrt -ldl
 

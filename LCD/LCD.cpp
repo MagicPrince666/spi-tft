@@ -14,7 +14,10 @@
 #include "LCD.h"
 #include "spi.h"
 //#include "pwmconfig.h"
+#if SYSFS_GPIO
+#else
 #include "touch.h"
+#endif
 
 void RGBToYUV(int Red, int Green, int Blue, int* Y,int* U,int* V)
 {
@@ -29,65 +32,41 @@ void YUVToRGB(int Y, int U, int V, int* Red, int* Green, int* Blue)
 	*Blue = ((Y << 8) + (U << 9) + (U << 3)) >> 8;
 }
 
+
 #define SPI
 
 uint16_t SPI_LCD_RAM[320*480];//显示缓存
 
 _lcd_dev lcddev;
 
+#if SYSFS_GPIO
+
+void init_lcd_gpio(void)
+{
+	lcddev.spi_lcd_bl = open(SPI_LCD_BL, O_RDWR);
+	//lcddev.spi_lcd_tcs = open(SPI_LCD_TCS, O_RDWR);
+	//lcddev.spi_lcd_rst = open(SPI_LCD_RST, O_RDWR);
+	lcddev.spi_lcd_dc = open(SPI_LCD_DC, O_RDWR);
+	//printf("bl = %d, dc = %d\n", lcddev.spi_lcd_bl, lcddev.spi_lcd_dc);
+
+	write(lcddev.spi_lcd_bl, "0", 1);
+	write(lcddev.spi_lcd_dc, "1", 1);
+}
+
+#endif
+
 uint16_t BACK_COLOR, POINT_COLOR;   //背景色，画笔色
 //写8bit数据
 void LCD_Writ_Bus(uint8_t da)   //串行数据写入
 {		
-#ifdef SPI
 	write(g_SPI_Fd, &da, 1);
-#else
-	for(int i = 0; i < 8; i++)
-	{
-		if((da << i) & 0x80)
-			LCD_SDI_1;
-		else
-			LCD_SDI_0;	
-		
-		LCD_SCK_0;
-		LCD_SCK_1;		
-	}
-#endif
 } 
 
-#ifndef SPI
-//写16bit数据
-void LCD_Writ_Bus16(uint16_t da)   //串行数据写入
-{		
-	for(int i = 0; i < 16; i++)
-	{
-		if((da << i) & 0x8000)
-			LCD_SDI_1;
-		else
-			LCD_SDI_0;	
-		
-		LCD_SCK_0;
-		LCD_SCK_1;	
-	}
-} 
-#endif
 //读8bit数据
 uint8_t LCD_Read_Bus()   
 {
 	uint8_t ret = 0;		
-#ifdef SPI
-	read(g_SPI_Fd,&ret,1);
-#else
-	LCD_CS_0;
-	for(int i = 0; i < 8; i++)
-	{	
-		LCD_SCK_1;	
-		LCD_SCK_0;
-		ret <<= 1;
-		if(LCD_SDO) ret |= 0x01;			
-	}
-	LCD_CS_1;
-#endif
+	read(g_SPI_Fd, &ret, 1);
 	return ret;
 } 
 
@@ -95,43 +74,21 @@ uint8_t LCD_Read_Bus()
 //写16bit数据
 uint16_t LCD_Read_Bus16(void) 
 {
-#ifdef SPI 
 	uint8_t ret[2];
 	read(g_SPI_Fd,ret,2);
 	return ret[0] << 8 | ret[1];
-#else
-	LCD_CS_0;
-	uint16_t ret = 0;		
-	for(int i = 0; i < 16; i++)
-	{	
-		LCD_SCK_1;
-		LCD_SCK_0;	
-		ret <<= 1;
-		if(LCD_SDO) ret |= 0x01;		
-	}
-	LCD_CS_1;
-	return ret;
-#endif
 } 
 
 
 void LCD_WR_DATA8(char da) //发送数据-8位参数
 {
-#ifdef SPI
 	LCD_DC_1;
     LCD_Writ_Bus(da); 
-#else
-	LCD_CS_0;
-    LCD_DC_1;
-	LCD_Writ_Bus(da);  
-	LCD_CS_1;
-#endif
 } 
 
 //#define LCD_WR_DATA8 LCD_WR_DATA
 void LCD_WR_DATA(uint16_t da)
 {
-#ifdef SPI
 	LCD_DC_1;
 	uint8_t dat[2];
 	dat[0] = da >>8;
@@ -144,12 +101,6 @@ void LCD_WR_DATA(uint16_t da)
 
 	/* 大端系统可以使用这条进行优化 */
 //	write(g_SPI_Fd, (uint8_t *)&da,2);
-#else
-	LCD_CS_0;
-	LCD_DC_1;
-	LCD_Writ_Bus16(da);
-	LCD_CS_1;
-#endif	
 }	
 void WriteComm(uint16_t da)
 {
@@ -165,15 +116,8 @@ void WriteData(uint16_t da)
 }
 void LCD_WR_REG(uint8_t da)	 
 {	
-#ifdef SPI
 	LCD_DC_0;
 	LCD_Writ_Bus(da);
-#else
-	LCD_CS_0;
-    LCD_DC_0;
-	LCD_Writ_Bus(da);
-	LCD_CS_1;
-#endif
 }
  void LCD_WR_REG_DATA(uint16_t reg,uint16_t da)
 {
@@ -183,16 +127,10 @@ void LCD_WR_REG(uint8_t da)
 //读LCD数据
 uint16_t LCD_RD_DATA(void)
 {	
-#ifdef SPI 
 	LCD_DC_1;
 	uint8_t ret[2];
 	read(g_SPI_Fd,ret,2);
 	return ret[0]<<8 | ret[1];
-#else
-	uint16_t ret = LCD_Read_Bus() <<8 ;
-	ret |= LCD_Read_Bus();
-	return ret;
-#endif
 }
 //读寄存器数据
 uint16_t LCD_ReadReg(uint16_t LCD_Reg)
@@ -212,8 +150,8 @@ void LCD_WriteRAM(uint16_t RGB_Code)
 {
 	LCD_WR_DATA(RGB_Code);  
 }
-#ifdef SPI
-#define BUF_LEN 36
+
+#define BUF_LEN 4096
 void LCD_Fast_WR_DATA(uint8_t* Color ,uint32_t len)
 {
 	LCD_DC_1;
@@ -267,8 +205,7 @@ void LCD_Fast_WR_Color_DATA16(uint16_t Color ,uint32_t len)
 		write(g_SPI_Fd, SPI_LCD_RAM + BUF_LEN*i, k);//最后写入不满32字节的包
 
 	free(SPI_LCD_RAM);		 
-}  
-#endif
+} 
 
 //从ILI93xx读出的数据为GBR格式，而我们写入的时候为RGB格式。
 //通过该函数转换
@@ -504,12 +441,8 @@ void LCD_delay(int t)
 
 void Lcd_Init(void)
 {
-	if (gpio_mmap())
-		printf("error\n");
-
-	mt76x8_gpio_set_pin_direction(11, 1);
-
 	SPI_Open();//硬件SPI初始化
+	init_lcd_gpio();
 	
 	
 	lcddev.dir = 0;	//竖屏
@@ -519,59 +452,7 @@ void Lcd_Init(void)
 	lcddev.wramcmd = 0X2C;
 	lcddev.setxcmd = 0X2A;
 	lcddev.setycmd = 0X2B;
-/*
-	LCD_WR_REG_DATA(0x00,0x0001);
-	usleep(50 * 1000);
-	lcddev.id = LCD_ReadReg(0x00);//SPI频死活读不了ID......
 
-	if(lcddev.id<0XFF||lcddev.id==0XFFFF||lcddev.id==0X9300)//读到ID不正确,新增lcddev.id==0X9300判断，因为9341在未被复位的情况下会被读成9300
-	{	
- 		//尝试9341 ID的读取		
-		LCD_WR_REG(0XD3);				   
-		LCD_RD_DATA(); 				//dummy read 	
- 		//LCD_Read_Bus();   	    	//读到0X00
-  		lcddev.id = LCD_RD_DATA();   	//读取9341								   
- 		//lcddev.id<<=8;
-		//lcddev.id|=LCD_Read_Bus();  	//读取41 	   			   
- 		if(lcddev.id!=0X9341)		//非9341,尝试是不是6804
-		{	
-			printf("LCD ID:0x%x not 0x9341\n",lcddev.id);
- 			LCD_WR_REG(0XBF);				   
-			LCD_Read_Bus(); 			//dummy read 	 
-	 		LCD_Read_Bus();   	    //读回0X01			   
-	 		LCD_Read_Bus(); 			//读回0XD0 			  	
-	  		lcddev.id=LCD_Read_Bus();//这里读回0X68 
-			lcddev.id<<=8;
-	  		lcddev.id|=LCD_Read_Bus();//这里读回0X04	  
-			if(lcddev.id!=0X6804)	//也不是6804,尝试看看是不是NT35310
-			{ 
-				printf("LCD ID:0x%x not 0x6804\n",lcddev.id);
-				LCD_WR_REG(0XD4);				   
-				LCD_Read_Bus(); 				//dummy read  
-				LCD_Read_Bus();   			//读回0X01	 
-				lcddev.id=LCD_Read_Bus();	//读回0X53	
-				lcddev.id<<=8;	 
-				lcddev.id|=LCD_Read_Bus();	//这里读回0X10	
-
-				if(lcddev.id!=0X5310)		//也不是NT35310,尝试看看是不是NT35510
-				{
-					printf("LCD ID:0x%x not 0x5310\n",lcddev.id);
-					LCD_WR_REG(0XDA);	
-					LCD_WR_REG(0X00);
-					LCD_Read_Bus();   		//读回0X00	 
-					LCD_WR_REG(0XDB);	
-					LCD_WR_REG(0X00);	
-					lcddev.id=LCD_Read_Bus();//读回0X80
-					lcddev.id<<=8;	
-					LCD_WR_REG(0XDC);	
-					LCD_WR_REG(0X00);	
-					lcddev.id|=LCD_Read_Bus();//读回0X00		
-					if(lcddev.id==0x8000)lcddev.id=0x5510;//NT35510读回的ID是8000H,为方便区分,我们强制设置为5510
-				}
-			}
- 		}  	
-	}
-*/
 	printf("LCD ID:0x%x\n",lcddev.id);
 	lcddev.id = 0X9341;
 	if(lcddev.id == 0x9341)
@@ -692,129 +573,9 @@ void Lcd_Init(void)
 
 		LCD_WR_REG(0x29);    //Display on 
 		LCD_WR_REG(0x2c); 
-	}else if(lcddev.id != 0x9325)
-	{
-		
-		LCD_WR_REG(0x01);
-		usleep(100000);
-		LCD_WR_REG(0xB0);//{setc, [107], W, 0x000B0}
-		LCD_WR_DATA8(0x00);
-		
-		LCD_WR_REG(0xB3);
-		LCD_WR_DATA8(0x02);
-		LCD_WR_DATA8(0x00);
-		LCD_WR_DATA8(0x00);
-		LCD_WR_DATA8(0x00);
-		
-		LCD_WR_REG(0xB4);
-		LCD_WR_DATA8(0x00);
-		
-		LCD_WR_REG(0xC0);
-		LCD_WR_DATA8(0x13);//
-		LCD_WR_DATA8( 0x3B);//480
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x03);//02
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x01);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x43);
-		
-		LCD_WR_REG( 0xC1);
-		LCD_WR_DATA8( 0x08);
-		LCD_WR_DATA8( 0x12);//CLOCK
-		LCD_WR_DATA8( 0x08);
-		LCD_WR_DATA8( 0x08);
-		
-		LCD_WR_REG( 0xC4);
-		LCD_WR_DATA8( 0x11);
-		LCD_WR_DATA8( 0x07);
-		LCD_WR_DATA8( 0x03);
-		LCD_WR_DATA8( 0x03);
-		
-		LCD_WR_REG( 0xC8);//GAMMA
-		LCD_WR_DATA8( 0x04);
-		LCD_WR_DATA8( 0x09);
-		LCD_WR_DATA8( 0x16);
-		LCD_WR_DATA8( 0x5A);
-		LCD_WR_DATA8( 0x02);
-		LCD_WR_DATA8( 0x0A);
-		LCD_WR_DATA8( 0x16);
-		LCD_WR_DATA8( 0x05);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x32);
-		LCD_WR_DATA8( 0x05);
-		LCD_WR_DATA8( 0x16);
-		LCD_WR_DATA8( 0x0A);
-		LCD_WR_DATA8( 0x53);//43/55
-		LCD_WR_DATA8( 0x08);
-		LCD_WR_DATA8( 0x16);
-		LCD_WR_DATA8( 0x09);
-		LCD_WR_DATA8( 0x04);
-		LCD_WR_DATA8( 0x32);
-		LCD_WR_DATA8( 0x00);
-		
-		LCD_WR_REG( 0x2A);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x01);
-		LCD_WR_DATA8( 0x3F);//320
-		
-		LCD_WR_REG( 0x2B);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x01);
-		LCD_WR_DATA8( 0xDF);//480
-		
-		LCD_WR_REG( 0x35);
-		LCD_WR_DATA8( 0x00);
-		
-		LCD_WR_REG( 0x3A);
-		LCD_WR_DATA8( 0x55);
-		
-		LCD_WR_REG( 0x44);
-		LCD_WR_DATA8( 0x00);
-		LCD_WR_DATA8( 0x01);
-		
-		LCD_WR_REG( 0x2C);
-		LCD_WR_REG( 0x11);
-		
-		usleep(150000);
-		
-		LCD_WR_REG( 0xD0);
-		LCD_WR_DATA8( 0x07);
-		LCD_WR_DATA8( 0x07);
-		LCD_WR_DATA8( 0x1E);
-		LCD_WR_DATA8( 0x07);
-		LCD_WR_DATA8( 0x03);
-		
-		LCD_WR_REG( 0xD1);
-		LCD_WR_DATA8( 0x03);
-		LCD_WR_DATA8( 0x52);//VCM
-		LCD_WR_DATA8( 0x10);//VDV
-		
-		LCD_WR_REG( 0xD2);
-		LCD_WR_DATA8( 0x03);
-		LCD_WR_DATA8( 0x24);
-		
-		LCD_WR_REG(0xB0);//{setc, [107], W, 0x000B0}
-		LCD_WR_DATA8(0x00);//{setp, [104], W, 0x00000}
-		
-		LCD_WR_REG(0x29);
-		usleep(10000);
-		LCD_WR_REG(0x36);
-		LCD_WR_DATA8(0x28);
-		
-		sleep(1);
-		 
-		/////////////////////////////////////////////////////
-		
-		LCD_WR_REG(0x3A);//
-		LCD_WR_DATA8(0x55);//
-		
-		
-		test_color();
 	}
-	
+
+	write(lcddev.spi_lcd_bl, "1", 1);
 	LCD_Display_Dir(DFT_SCAN_DIR);
 	LCD_Clear(WHITE);
 }
@@ -1136,47 +897,4 @@ void showimage(uint16_t x,uint16_t y) //显示40*40图片
 		}
 	}
 	LCD_Color_Fill(x,y,x+39,y+39,SPI_LCD_RAM);
-}
-
-void test_color(void)
-{
-	unsigned short i,j;
-	Address_set(0,319,0,479);
-	for(i=0;i<480;i++)
-	{	for(j=0;j<320;j++)
-		{
-			if(j<40)
-			{
-				LCD_WR_DATA(BLACK); 
-			}
-			else if(j<80)
-			{
-				LCD_WR_DATA(BLUE);
-			}
-			else if(j<120)
-			{
-				LCD_WR_DATA(BRED);
-			}
-			else if(j<160)
-			{
-				LCD_WR_DATA(GRED);
-			}
-			else if(j<200)
-			{
-				LCD_WR_DATA(RED);
-			}
-			else if(j<240)
-			{
-				LCD_WR_DATA(GREEN);
-			}
-			else if(j<280)
-			{
-				LCD_WR_DATA(YELLOW);
-			}
-			else if(j<320)
-			{
-				LCD_WR_DATA(BROWN);
-			}
-		}
-	}
 }

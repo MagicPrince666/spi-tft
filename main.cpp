@@ -16,8 +16,8 @@
 #include <signal.h>
 #include "LCD.h"
 #include "font.h"
-#include "touch.h"
-#include "key.h"
+//#include "touch.h"
+//#include "key.h"
 //#include "piclib.h"
 #include "spi.h"
 
@@ -33,7 +33,7 @@ void my_quit()
 	//SPI_Close();
 	//I2C_close();
 	//gifdecoding = 0;
-	run = 0;
+	//run = 0;
 }
 //清空屏幕并在右上角显示"RST"
 void Load_Drow_Dialog(void)
@@ -127,7 +127,8 @@ void lcd_draw_bline(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,uint8_t s
 			uCol+=incy; 
 		} 
 	}  
-}   
+}
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 //5个触控点的颜色(电容触摸屏用)												 
 const uint16_t POINT_COLOR_TBL[5]={RED,GREEN,BLUE,BROWN,GRED};  
@@ -145,8 +146,8 @@ void rtp_test(void)
 				else TP_Draw_Big_Point(tp_dev.x[0],tp_dev.y[0],RED);		//画图	  			   
 			}
 		}else usleep(10*1000);	//没有按键按下的时候 	    
-		if(KEY_1 == 0)	//如果按键2按下,退出程序 
-		break;
+		//if(KEY_1 == 0)	//如果按键2按下,退出程序 
+		//break;
 	}
 }
 //电容触摸屏测试函数
@@ -190,7 +191,7 @@ uint8_t jiance() //检测触摸和按键
 		Load_Drow_Dialog();
 		rtp_test();
 	}
-		
+/*	
 	if(KEY_1 == 0)	//如果按键1按下,进入校准程序 
 	{		
 		usleep(20*1000);
@@ -200,9 +201,10 @@ uint8_t jiance() //检测触摸和按键
 			
 		return 1;
 	}
-	 
+*/ 
 	return 0;
 }
+#endif
 void xianshi()//显示信息
 {   
 	BACK_COLOR = WHITE;
@@ -212,6 +214,7 @@ void xianshi()//显示信息
 	
 	LCD_Backlight(0x00);
 }
+
 void showqq()
 { 
 	uint16_t x,y; 
@@ -237,17 +240,17 @@ void showimage() //显示40*40图片
 	ref = 0;		
 	//LCD_Display_Dir(L2R_U2D);		
 }
-
+#if 0
 static void sigint_handler(int sig)
 {   
 	my_quit();
     printf("-----@@@@@ sigint_handler  is over !\n"); 
 }
-
+#endif
 void * thread_tft (void *arg) 
 {
 	Lcd_Init();   //tft初始化
-	Init_Key();
+	//Init_Key();
 	//gui_init();
 	
 	BACK_COLOR = WHITE;
@@ -272,10 +275,10 @@ void * thread_tft (void *arg)
 	// LCD_Display_Dir(DFT_SCAN_DIR);
 	// LCD_Clear(WHITE);
 	
-	tp_dev.init();//触摸初始化
-	printf("touch init\n");
+	//tp_dev.init();//触摸初始化
+	//printf("touch init\n");
 	
-	LCD_Display_Dir(D2U_L2R);
+	LCD_Display_Dir(U2D_R2L);
 	time_t timer;//time_t就是long int 类型
 	int times = 0;
     timer = time(NULL);
@@ -296,8 +299,9 @@ void * thread_tft (void *arg)
 	
 	showimage();
 
-	while(run)
-	{							
+	while(1)
+	{
+#if 0						
 		if(jiance()) //检测触摸和按键
 		{
 			LCD_Display_Dir(L2R_U2D);
@@ -305,6 +309,7 @@ void * thread_tft (void *arg)
 			LCD_Display_Dir(D2U_L2R);
 			//LCD_DrawRectangle(12,16,228,304);
 		}
+#endif
 	  	if(ref)
 		  {
 			LCD_Display_Dir(L2R_U2D);
@@ -313,7 +318,7 @@ void * thread_tft (void *arg)
 		  }
 		usleep(100000);
     }
-	close(gpio_mmap_fd);
+	//close(gpio_mmap_fd);
 	SPI_Close();
 	pthread_exit(NULL);
 }
@@ -326,7 +331,7 @@ int main(int argc, char *argv[])
 	pthread_t pthread_id[3];//线程ID
     pthread_mutex_init(&mut,NULL);
 
-	signal(SIGINT, sigint_handler);//信号处理
+	//signal(SIGINT, sigint_handler);//信号处理
 
 	if (pthread_create(&pthread_id[0], NULL, thread_tft , NULL))
         printf("Create thread_tft error!\n");
@@ -349,6 +354,6 @@ int main(int argc, char *argv[])
     //     pthread_join(pthread_id[2],NULL);
     //     printf("oled_thread %ld exit!\n",pthread_id[2]);
 	// }
-	
+
 	return 0;
 }

@@ -14,6 +14,7 @@
 #include <inttypes.h>
 #include "sys.h"
 
+#define SYSFS_GPIO 1
  //定义LCD的尺寸	
 extern uint16_t SPI_LCD_RAM[320*480];//缓存大小
 
@@ -26,14 +27,32 @@ typedef struct
 	uint8_t  dir;			//横屏还是竖屏控制：0，竖屏；1，横屏。	
 	uint16_t	wramcmd;		//开始写gram指令
 	uint16_t  setxcmd;		//设置x坐标指令
-	uint16_t  setycmd;		//设置y坐标指令	 
+	uint16_t  setycmd;		//设置y坐标指令
+#if SYSFS_GPIO
+	int  spi_lcd_bl;
+//	int  spi_lcd_tcs;
+	int  spi_lcd_dc;
+//	int  spi_lcd_rst;
+#endif
 }_lcd_dev; 
 
 extern _lcd_dev lcddev;	//管理LCD重要参数
 //IO连接  
+#if SYSFS_GPIO
+#define SPI_LCD_BL "/sys/class/leds/lcdbl/brightness"
+//#define SPI_LCD_TCS "/sys/class/leds/lcd_tcs/brightness"
+//#define SPI_LCD_RST "/sys/class/leds/lcd_rst/brightness"
+#define SPI_LCD_DC "/sys/class/leds/lcddc/brightness"
 
-#define LCD_DC_1 mt76x8_gpio_set_pin_value(11, 1)
-#define LCD_DC_0 mt76x8_gpio_set_pin_value(11, 0)
+#define LCD_DC_1 write(lcddev.spi_lcd_dc, "1", 1)
+#define LCD_DC_0 write(lcddev.spi_lcd_dc, "0", 1)
+
+
+void init_lcd_gpio(void);
+
+#else
+
+#endif
 
 //扫描方向定义
 #define L2R_U2D  0 //从左到右,从上到下

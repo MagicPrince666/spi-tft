@@ -15,11 +15,11 @@
 #define SPI_DEBUG 0
 
 
-static const char *device = "/dev/spidev32766.1";
+static const char *device = "/dev/spidev1.0";
 static uint8_t mode = 0; /* SPI通信使用全双工，设置CPOL＝0，CPHA＝0。 */
 static uint8_t bits = 8; /* 8ｂiｔｓ读写，MSB first。*/
-static uint32_t speed = 40 * 1000 * 1000;/* 设置96M传输速度 */
-int g_SPI_Fd = 0;
+static uint32_t speed = 100 * 1000 * 1000;/* 设置96M传输速度 */
+int g_SPI_Fd = -1;
 
 
 static void pabort(const char *s)
@@ -41,22 +41,15 @@ int SPI_Write(uint8_t *TxBuf, int len)
     int ret = 0;
     int fd = g_SPI_Fd;
     
-    if( len<= 32)
-        ret = write(fd, TxBuf, len);
-    else
-    {
-        printf("buffer too long\n");
-    }
+    ret = write(fd, TxBuf, len);
 
     if (ret < 0)
     printf("SPI Write error\n");
-    else
-    {
+    else {
 #if SPI_DEBUG
         int i;
         printf("nSPI Write [Len:%d]: ", len);
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             if (i % 8 == 0)
             printf("nt");
             printf("0x%02X ", TxBuf[i]);
@@ -81,22 +74,21 @@ int SPI_Read(uint8_t *RxBuf, int len)
 {
     int ret;
     int fd = g_SPI_Fd;
+
     ret = read(fd, RxBuf, len);
     if (ret < 0)
-    printf("SPI Read errorn\n");
-    else
-    {
-    #if SPI_DEBUG
+        printf("SPI Read errorn\n");
+    else {
+#if SPI_DEBUG
         int i;
         printf("SPI Read [len:%d]:", len);
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             if (i % 8 == 0)
             printf("nt");
             printf("0x%02X ", RxBuf[i]);
         }
         printf("\n");
-    #endif
+#endif
     }
 
     return ret;
@@ -112,19 +104,20 @@ int SPI_Read(uint8_t *RxBuf, int len)
 */
 int SPI_Open(void)
 {
-    int fd;
+    int fd = -1;
     int ret = 0;
 
 
-    if (g_SPI_Fd != 0) /* 设备已打开 */
+    if (g_SPI_Fd > 0) /* 设备已打开 */
     return 0xF1;
 
 
     fd = open(device, O_RDWR);
     if (fd < 0)
         pabort("can't open device");
-    else
+    else {
         printf("SPI - Open Succeed. Start Init SPI...\n");
+    }
 
 
     g_SPI_Fd = fd;
