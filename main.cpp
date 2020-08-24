@@ -209,8 +209,12 @@ void xianshi()//显示信息
 {   
 	BACK_COLOR = WHITE;
 	POINT_COLOR = RED;	
-	LCD_ShowString(0,20,lcddev.width,lcddev.height,16,(char *)"https://github.com/MagicPrince666/spi-tft.git");
-	LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer:me ! is me!");
+	//LCD_ShowString(0,20,lcddev.width,lcddev.height,16,(char *)"https://github.com/MagicPrince666/spi-tft.git");
+	//LCD_ShowString(0,12+16+24,lcddev.width,lcddev.height,16,(char *)"Designer:me ! is me!");
+	LCD_ShowString(30,252,lcddev.width,lcddev.height,16,(char *)"Nmae:leo");
+	LCD_ShowString(30,268,lcddev.width,lcddev.height,16,(char *)"Embedded engineer");
+	LCD_ShowString(30,284,lcddev.width,lcddev.height,16,(char *)"Company:XAG CO., LTD.");
+	LCD_ShowString(30,300,lcddev.width,lcddev.height,16,(char *)"Email:huangliquan@xa.com");
 	
 	LCD_Backlight(0x00);
 }
@@ -235,7 +239,7 @@ void showqq()
 void showimage() //显示40*40图片
 {
 	LCD_Clear(WHITE); //清屏  
-	showqq();
+//	showqq();
 	xianshi(); //显示信息 
 	ref = 0;		
 	//LCD_Display_Dir(L2R_U2D);		
@@ -260,7 +264,7 @@ void * thread_tft (void *arg)
 	printf("Init piclib\n");
 
 	// printf("show jpg\n");
-	// ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
+	//ai_load_picfile((uint8_t*)"/root/test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
 	// usleep(100*1000);
 	// LCD_Clear(WHITE);
 	// printf("show bmp\n");
@@ -297,7 +301,12 @@ void * thread_tft (void *arg)
 
 	printf("Did you see that? demo!!\n");
 	
-	showimage();
+	LCD_Display_Dir(DFT_SCAN_DIR);
+
+	ai_load_picfile((uint8_t*)"/root/test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
+	sleep(1);
+	LCD_Clear(WHITE);
+	//showimage();
 	int count = 0;
 	char str[64] = {0};
 
@@ -312,15 +321,19 @@ void * thread_tft (void *arg)
 			//LCD_DrawRectangle(12,16,228,304);
 		}
 #endif
-		if(count > 1) {
+		if(count >= 3) {
 			count = 0;
 		}
 		int len = sprintf(str, "/root/test_%d.jpg", ++count);
 		str[len] = 0;
-		LCD_Display_Dir(L2R_U2D);
+		//LCD_Display_Dir(L2R_U2D);
 		ai_load_picfile((uint8_t*)str, 0, 0, 240, 320, 0, T_JPG);//显示当前目录jpg图片
-		LCD_Display_Dir(D2U_L2R);
-		sleep(1);
+		//LCD_ShowString(30,252,lcddev.width,lcddev.height,16,(char *)"Nmae:leo");
+		//LCD_ShowString(30,268,lcddev.width,lcddev.height,16,(char *)"Embedded engineer");
+		//LCD_ShowString(30,284,lcddev.width,lcddev.height,16,(char *)"Company:XAG CO., LTD.");
+		//LCD_ShowString(30,300,lcddev.width,lcddev.height,16,(char *)"Email:huangliquan@xa.com");
+		//LCD_Display_Dir(D2U_L2R);
+		sleep(3);
 		LCD_Clear(WHITE);
     }
 

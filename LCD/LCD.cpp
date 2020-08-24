@@ -854,7 +854,7 @@ void LCD_ShowString(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t
     {       
         if(x>=width){x=x0;y+=size;}
         if(y>=height)break;//退出
-        LCD_ShowChar(x,y,*p,size,0);
+        LCD_ShowChar(x, y, *p, size, 0);
         x+=size/2;
         p++;
     }  
