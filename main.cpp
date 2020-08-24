@@ -18,7 +18,7 @@
 #include "font.h"
 //#include "touch.h"
 //#include "key.h"
-//#include "piclib.h"
+#include "piclib.h"
 #include "spi.h"
 
 uint8_t ref = 0;//刷新显示
@@ -256,8 +256,8 @@ void * thread_tft (void *arg)
 	BACK_COLOR = WHITE;
 	POINT_COLOR = BLUE; 
 	
-	// piclib_init();				//piclib初始化	
-	// printf("Init piclib\n");
+	piclib_init();				//piclib初始化	
+	printf("Init piclib\n");
 
 	// printf("show jpg\n");
 	// ai_load_picfile((uint8_t*)"test.jpg",0,0,240,320,0,T_JPG);//显示当前目录jpg图片
@@ -278,7 +278,7 @@ void * thread_tft (void *arg)
 	//tp_dev.init();//触摸初始化
 	//printf("touch init\n");
 	
-	LCD_Display_Dir(U2D_R2L);
+	LCD_Display_Dir(D2U_L2R);
 	time_t timer;//time_t就是long int 类型
 	int times = 0;
     timer = time(NULL);
@@ -298,6 +298,8 @@ void * thread_tft (void *arg)
 	printf("Did you see that? demo!!\n");
 	
 	showimage();
+	int count = 0;
+	char str[64] = {0};
 
 	while(1)
 	{
@@ -310,14 +312,18 @@ void * thread_tft (void *arg)
 			//LCD_DrawRectangle(12,16,228,304);
 		}
 #endif
-	  	if(ref)
-		  {
-			LCD_Display_Dir(L2R_U2D);
-		  	//ai_load_picfile((uint8_t*)"test.bmp",0,0,240,319,0,T_BMP);
-			LCD_Display_Dir(D2U_L2R);
-		  }
-		usleep(100000);
+		if(count > 1) {
+			count = 0;
+		}
+		int len = sprintf(str, "/root/test_%d.jpg", ++count);
+		str[len] = 0;
+		LCD_Display_Dir(L2R_U2D);
+		ai_load_picfile((uint8_t*)str, 0, 0, 240, 320, 0, T_JPG);//显示当前目录jpg图片
+		LCD_Display_Dir(D2U_L2R);
+		sleep(1);
+		LCD_Clear(WHITE);
     }
+
 	//close(gpio_mmap_fd);
 	SPI_Close();
 	pthread_exit(NULL);
