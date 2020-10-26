@@ -1,6 +1,6 @@
-CROSS_COMPILE = arm-f1c100s-linux-uclibcgnueabi-
-CPP = $(CROSS_COMPILE)g++
-CC  = $(CROSS_COMPILE)gcc
+#CROSS_COMPILE = arm-f1c200s-linux-gnueabi-
+#CXX = $(CROSS_COMPILE)g++
+#CC  = $(CROSS_COMPILE)gcc
 
 TARGET	= simple-spitft
 
@@ -21,13 +21,13 @@ COBJS	= $(patsubst %.c,%.o,$(CFILES))
 all:$(OBJS) $(COBJS) $(TARGET)
 
 $(OBJS):%.o:%.cpp
-	$(CPP) $(CFLAGS) $(INC) -c -o $(OBJPATH)/$(notdir $@) $< 
+	$(CXX) $(CFLAGS) $(INC) -c -o $(OBJPATH)/$(notdir $@) $< 
 
 $(COBJS):%.o:%.c
 	$(CC) $(CFLAGS) $(INC) -c -o $(OBJPATH)/$(notdir $@) $< 
 
 $(TARGET):$(OBJPATH)
-	$(CPP) -o $@ $(OBJPATH)/*.o $(LDFLAGS) 
+	$(CXX) -o $@ $(OBJPATH)/*.o $(LDFLAGS) 
 
 install:
 	cp -r $(TARGET) $(INSTALLPATH) 
